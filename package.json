@@ -1,10 +1,13 @@
 {
   "devDependencies": {
     "@types/node": "^18.14.0",
+    "jsdom": "^21.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vitest": "^0.28.5"
   },
   "scripts": {
-    
-  } 
+    "test": "yarn run vitest ./__tests__",
+    "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
+  }
 }
