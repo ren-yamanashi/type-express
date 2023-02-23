@@ -7,6 +7,7 @@
     "vitest": "^0.28.5"
   },
   "scripts": {
+    "start:dev": "npx ts-node src/index.ts",
     "test": "yarn run vitest ./__tests__",
     "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
   }
