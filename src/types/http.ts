@@ -12,3 +12,8 @@ export type Server = HttpServer<
 export type ServerResponse = HttpSErverResponse<IncomingMessage> & {
   req: IncomingMessage;
 };
+
+export type RequestOptions = {
+  path: string;
+  method: string;
+};
