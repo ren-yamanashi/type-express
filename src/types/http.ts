@@ -1,14 +1,23 @@
 import {
-  Server as HttpServer,
+  Server,
   IncomingMessage,
-  ServerResponse as HttpSErverResponse,
+  ServerResponse,
+  OutgoingHttpHeader,
 } from "http";
+import { Dict } from ".";
 
-export type Server = HttpServer<
-  typeof IncomingMessage,
-  typeof HttpSErverResponse
->;
+export type HttpServer = Server<typeof IncomingMessage, typeof ServerResponse>;
 
-export type ServerResponse = HttpSErverResponse<IncomingMessage> & {
-  req: IncomingMessage;
+export interface HttpMethodOptions {
+  host: string;
+  port: number;
+  path: string;
+  method: string;
+};
+
+export type GetMethodOptions = HttpMethodOptions;
+
+export type PostMethodOptions = HttpMethodOptions & {
+  headers: Dict<OutgoingHttpHeader>;
+  data: string;
 };

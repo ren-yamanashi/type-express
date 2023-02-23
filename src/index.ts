@@ -1,3 +1,8 @@
-import { app } from "./application";
+import { TypeExpress } from "./application";
 
-app.listen(8000);
+const PORT = 8000;
+const app = new TypeExpress();
+
+
+app.listen(PORT);
+app.get();

@@ -1,25 +1,40 @@
 import http from "http";
-import { App } from "./interface/app.interface";
-import { ServerResponse } from "./types/http";
+import { GetMethodOptions, HttpServer } from "./types/http";
 
-const listen = (port: number): void => {
-  const server = http.createServer((_: any, res: ServerResponse) => {
-    // NOTE: Content-typeというヘッダー情報に「application.json」という値を設定
-    res.writeHead(200, { "Content-Type": "application.json" });
-    // NOTE: ボディ部分のコンテンツを書き出し
-    res.write(
-      JSON.stringify({
-        data: "Hello World!",
-      })
-    );
-    res.end();
-  });
+export interface Application {
+  listen: (port: number, writeText: string) => void;
+  get: (options: GetMethodOptions) => void;
+}
 
-  server.listen(port, () => {
-    console.log(`Application is running on: http://localhost:${port}`);
-  });
-};
+export class TypeExpress implements Application {
+  server: HttpServer;
 
-export const app: App = {
-  listen,
-};
+  constructor() {
+    this.server = http.createServer((req, res) => {
+      if (req.method === "GET" && req.url === "/") {
+        // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.write("Hello World!");
+        res.end();
+      }
+    });
+  }
+
+  listen = (port: number) => {
+    this.server.listen(port, () => {
+      console.log(`Application is running on: http://localhost:${port}`);
+    });
+  };
+
+  get = (): void => {
+    this.server.on("request", (req, res) => {
+      if ((req.url === "/user", req.method === "GET")) {
+        req.on("end", () => {
+          res.writeHead(200, { "Content-Type": "text/plain" });
+          res.write("Get User");
+          res.end();
+        });
+      }
+    });
+  };
+}

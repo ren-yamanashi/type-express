@@ -2,8 +2,6 @@ import express from "express";
 import { users } from "./database";
 
 const app: express.Express = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.listen(1060, () => {
   console.log("🚀  Application is running on: http://localhost:1060.");
