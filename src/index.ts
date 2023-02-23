@@ -1,9 +1,13 @@
 import { TypeExpress } from "./application";
 
+const PORT = 8000;
+const HOST = "localhost";
 const app = new TypeExpress();
 
-app.listen(8000);
+app.listen(PORT);
 app.get({
+  port: PORT,
+  host: HOST,
   path: "/",
   method: "GET",
 });

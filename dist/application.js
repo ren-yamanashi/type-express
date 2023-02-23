@@ -8,31 +8,36 @@ const http_1 = __importDefault(require("http"));
 class TypeExpress {
     constructor() {
         this.listen = (port) => {
-            this.port = port;
-            const server = http_1.default.createServer((_, res) => {
-                // NOTE: Content-typeというヘッダー情報に値を設定
-                res.writeHead(200, { "Content-Type": "text/plain" });
-                res.write("Hello World!");
-                res.end();
-            });
-            server.listen(port, () => {
+            this.server.listen(port, () => {
                 console.log(`Application is running on: http://localhost:${port}`);
             });
         };
-        this.get = (requestOptions) => {
-            const request = http_1.default.request(Object.assign({ host: "localhost", port: this.port }, requestOptions), (res) => {
-                console.log(`Response status code: ${res.statusCode}`);
-                console.log("Response headers: ", res.headers);
-                res.setEncoding("utf8");
-                res.on("data", (chunk) => {
-                    console.log(`Response body: ${chunk}`);
-                });
+        this.get = (options) => {
+            this.server.on("request", (req, res) => {
+                if ((req.url === "/", req.method === "POST")) {
+                    const request = http_1.default.request(options, (response) => {
+                        let body = "";
+                        response.on("data", (chunk) => {
+                            body += chunk;
+                        });
+                        response.on("end", () => {
+                            console.log(body);
+                        });
+                    });
+                    request.write("Hello World!");
+                    request.on("error", (error) => {
+                        console.error(error);
+                    });
+                    request.end();
+                }
             });
-            request.on("error", (error) => {
-                console.error(`Request failed: ${error.message}`);
-            });
-            request.end();
         };
+        this.server = http_1.default.createServer((req, res) => {
+            // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
+            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.write("Hello World!");
+            res.end();
+        });
     }
 }
 exports.TypeExpress = TypeExpress;
