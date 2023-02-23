@@ -8,6 +8,7 @@ export interface Application {
 
 export class TypeExpress implements Application {
   server: HttpServer;
+
   constructor() {
     this.server = http.createServer((req, res) => {
       if (req.method === "GET" && req.url === "/") {
