@@ -12,31 +12,24 @@ class TypeExpress {
                 console.log(`Application is running on: http://localhost:${port}`);
             });
         };
-        this.get = (options) => {
+        this.get = () => {
             this.server.on("request", (req, res) => {
-                if ((req.url === "/", req.method === "POST")) {
-                    const request = http_1.default.request(options, (response) => {
-                        let body = "";
-                        response.on("data", (chunk) => {
-                            body += chunk;
-                        });
-                        response.on("end", () => {
-                            console.log(body);
-                        });
+                if ((req.url === "/user", req.method === "GET")) {
+                    req.on("end", () => {
+                        res.writeHead(200, { "Content-Type": "text/plain" });
+                        res.write("Get User");
+                        res.end();
                     });
-                    request.write("Hello World!");
-                    request.on("error", (error) => {
-                        console.error(error);
-                    });
-                    request.end();
                 }
             });
         };
         this.server = http_1.default.createServer((req, res) => {
-            // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
-            res.writeHead(200, { "Content-Type": "text/plain" });
-            res.write("Hello World!");
-            res.end();
+            if (req.method === "GET" && req.url === "/") {
+                // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
+                res.writeHead(200, { "Content-Type": "text/plain" });
+                res.write("Hello World!");
+                res.end();
+            }
         });
     }
 }

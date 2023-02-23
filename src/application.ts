@@ -1,5 +1,5 @@
 import http from "http";
-import { GetMethodOptions, Server } from "./types/http";
+import { GetMethodOptions, HttpServer } from "./types/http";
 
 export interface Application {
   listen: (port: number, writeText: string) => void;
@@ -7,13 +7,15 @@ export interface Application {
 }
 
 export class TypeExpress implements Application {
-  private server!: Server;
+  server: HttpServer;
   constructor() {
     this.server = http.createServer((req, res) => {
-      // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.write("Hello World!");
-      res.end();
+      if (req.method === "GET" && req.url === "/") {
+        // NOTE: ブラウザで`http://localhost:8000`を開いたときは、自動的にこのリクエストが送られる
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.write("Hello World!");
+        res.end();
+      }
     });
   }
 
@@ -23,25 +25,14 @@ export class TypeExpress implements Application {
     });
   };
 
-  get = (options: GetMethodOptions): void => {
+  get = (): void => {
     this.server.on("request", (req, res) => {
-      if ((req.url === "/", req.method === "POST")) {
-        const request = http.request(options, (response) => {
-          let body = "";
-          response.on("data", (chunk) => {
-            body += chunk;
-          });
-          response.on("end", () => {
-            console.log(body);
-          });
+      if ((req.url === "/user", req.method === "GET")) {
+        req.on("end", () => {
+          res.writeHead(200, { "Content-Type": "text/plain" });
+          res.write("Get User");
+          res.end();
         });
-
-        request.write("Hello World!");
-        request.on("error", (error) => {
-          console.error(error);
-        });
-
-        request.end();
       }
     });
   };
