@@ -3,7 +3,7 @@ import { Server, ServerResponse } from "./types/http";
 
 export interface Application {
   listen: (port: number, writeText: string) => void;
-  get: (path?: string) => void;
+  get: (message: string) => void;
 }
 
 export class TypeExpress implements Application {
@@ -22,7 +22,7 @@ export class TypeExpress implements Application {
     });
   };
 
-  get = () => {
-    this.response = "Hello World";
+  get = (message: string): void => {
+    this.response = message;
   };
 }

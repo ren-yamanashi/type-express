@@ -19,8 +19,8 @@ class TypeExpress {
                 console.log(`Application is running on: http://localhost:${port}`);
             });
         };
-        this.get = () => {
-            this.response = "Hello World";
+        this.get = (message) => {
+            this.response = message;
         };
     }
 }
