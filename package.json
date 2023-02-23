@@ -3,11 +3,13 @@
     "@types/node": "^18.14.0",
     "jsdom": "^21.1.0",
     "ts-node": "^10.9.1",
+    "tsc-watch": "^6.0.0",
     "typescript": "^4.9.5",
     "vitest": "^0.28.5"
   },
   "scripts": {
     "start:dev": "npx ts-node src/index.ts",
+    "start:watch-dev": "tsc-watch --onSuccess \"node dist/index.js\"",
     "test": "yarn run vitest ./__tests__",
     "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
   }
