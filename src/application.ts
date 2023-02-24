@@ -6,6 +6,11 @@ export interface Application {
   get: (options: GetMethodOptions) => void;
 }
 
+/**
+ * MEMO: get：serverの呼び出しはいらない。設定を書くだけ
+ *      getで書いた設定を、createServerに反映する。
+ *      その反映する際の分岐処理は、routerで制御する
+ */
 export class TypeExpress implements Application {
   server: HttpServer;
 
@@ -20,13 +25,13 @@ export class TypeExpress implements Application {
     });
   }
 
-  listen = (port: number) => {
+  listen(port: number): void {
     this.server.listen(port, () => {
       console.log(`Application is running on: http://localhost:${port}`);
     });
-  };
+  }
 
-  get = (): void => {
+  get(): void {
     this.server.on("request", (req, res) => {
       if ((req.url === "/user", req.method === "GET")) {
         req.on("end", () => {
@@ -36,5 +41,5 @@ export class TypeExpress implements Application {
         });
       }
     });
-  };
+  }
 }
