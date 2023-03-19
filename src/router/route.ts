@@ -19,7 +19,10 @@ export class Router {
       if (matchPathWithUrl(item.path, url) && method === "GET") {
         const request = new TypeExpressRequest(req);
         const response = new TypeExpressResponse(res);
-        console.log(url);
+        request.getParams(item.path, url);
+        
+        console.log("🚀 ~ file: route.ts:24 ~ Router ~ this.stack.forEach ~ request.params:", request.params)
+        
         item.handlers(request, response);
       }
     });

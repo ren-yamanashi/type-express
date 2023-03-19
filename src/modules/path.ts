@@ -9,3 +9,18 @@ export const matchPathWithUrl = (path: string, url: string): boolean => {
     .map((p, i) => (!/:/.test(p) ? p === urlParts[i] : true))
     .includes(false);
 };
+
+export const getParam = (
+  path: string,
+  url: string
+): { [key: string]: any } | null => {
+  const urlParts = url.split("/").reverse();
+  const paths = path.split("/").reverse();
+  let params: { [key: string]: any } = {};
+  paths.forEach((p, i) => {
+    if (/:/.test(p)) params[p.slice(1)] = urlParts[i];
+  });
+
+  if (Object.keys(params).length === 0) return null;
+  return params;
+};
