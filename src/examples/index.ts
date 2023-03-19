@@ -3,12 +3,12 @@ import TypeExpress from "..";
 const PORT = 8000;
 const app = new TypeExpress();
 
-app.listen(PORT, () => {
-  console.log(`🚀 Application is running on: http://localhost:${PORT}`);
-});
-app.get("/", (req:any, res:any) => {
+app.get("/", (req, res) => {
   res.send("hello World!");
 });
-app.get("/user", (req:any, res:any) => {
+app.get("/user", (req, res) => {
   res.send("Get User!!");
+});
+app.listen(PORT, () => {
+  console.log(`🚀 Application is running on: http://localhost:${PORT}`);
 });
