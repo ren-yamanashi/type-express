@@ -8,7 +8,7 @@ app.listen(1060, () => {
 });
 
 app.get("/", (req: express.Request, res: express.Response) => {
-  res.send("hello world.");
+  res.send("hello world")
 });
 // get list
 app.get("/users", (req: express.Request, res: express.Response) => {

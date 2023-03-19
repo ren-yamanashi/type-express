@@ -5,5 +5,3 @@ export type HttpServerRequest = IncomingMessage;
 export type HttpServerResponse = ServerResponse<IncomingMessage> & {
   req: HttpServerRequest;
 };
-
-

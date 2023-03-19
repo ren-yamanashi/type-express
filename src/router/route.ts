@@ -1,14 +1,12 @@
+import { Handlers, TypeExpressResponse } from "../application";
 import { HttpServerRequest, HttpServerResponse } from "../types/http";
 
 export class Router {
-  stack: { path: string; writeMessage: string }[];
-  writeHead: string;
-  writeMessage: string;
+  stack: { path: string; handlers: Handlers }[];
   constructor() {
     this.stack = [];
-    this.writeHead = this.writeMessage = "Hello World!";
   }
-  addToStack(arg: { path: string; writeMessage: string }): void {
+  addToStack(arg: { path: string; handlers: Handlers }): void {
     this.stack.push(arg);
   }
   createRoute(req: HttpServerRequest, res: HttpServerResponse): void {
@@ -16,9 +14,8 @@ export class Router {
     const method = req.method;
     this.stack.forEach((item) => {
       if (url === item.path && method === "GET") {
-        res.setHeader("Content-Type", "text/plain");
-        res.write(item.writeMessage);
-        return res.end();
+        const response = new TypeExpressResponse(res);
+        item.handlers(req, response);
       }
     });
   }
