@@ -1,23 +1,21 @@
-import { createServer } from "http";
+import { createServer, ServerResponse } from "http";
 import { HttpServer } from "./types/http";
 import { Router } from "./router/route";
 export interface Application {
   listen: (port: number, onSuccess: () => void) => void;
-  get: (path: string, writeMessage: string) => void;
+  get: (path: string, handlers: Handlers) => void;
 }
 
-/**
- * MEMO: get：serverの呼び出しはいらない。設定を書くだけ
- *      getで書いた設定を、createServerに反映する。
- *      その反映する際の分岐処理は、routerで制御する
- */
-const router = new Router();
+export type Handlers = (req: any, res: TypeExpressResponse) => void;
 export class TypeExpress implements Application {
   server: HttpServer;
+  writeMessage!: string;
+  router: Router
 
   constructor() {
+    this.router = new Router()
     this.server = createServer((req, res) => {
-      router.createRoute(req, res);
+      this.router.createRoute(req, res);
     });
   }
 
@@ -25,7 +23,20 @@ export class TypeExpress implements Application {
     this.server.listen(port, onSuccess);
   }
 
-  get(path: string, writeMessage: string): void {
-    router.addToStack({ path, writeMessage });
+  get(path: string, handlers: Handlers): void {
+    this.router.addToStack({
+      path,
+      handlers,
+    });
+  }
+}
+
+export class TypeExpressResponse {
+  constructor(private response: ServerResponse) {}
+
+  send(message: string): void {
+    this.response.setHeader("Content-Type", "text/plain");
+    this.response.write(message);
+    this.response.end();
   }
 }
