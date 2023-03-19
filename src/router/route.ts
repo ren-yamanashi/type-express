@@ -1,4 +1,6 @@
-import { Handlers, TypeExpressResponse } from "../application";
+import { Handlers } from "../types";
+import { TypeExpressRequest } from "../request";
+import { TypeExpressResponse } from "../response";
 import { HttpServerRequest, HttpServerResponse } from "../types/http";
 
 export class Router {
@@ -14,8 +16,9 @@ export class Router {
     const method = req.method;
     this.stack.forEach((item) => {
       if (url === item.path && method === "GET") {
+        const request = new TypeExpressRequest(req);
         const response = new TypeExpressResponse(res);
-        item.handlers(req, response);
+        item.handlers(request, response);
       }
     });
   }
