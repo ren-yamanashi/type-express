@@ -9,7 +9,6 @@ export interface Application {
 export type Handlers = (req: any, res: TypeExpressResponse) => void;
 export class TypeExpress implements Application {
   server: HttpServer;
-  writeMessage!: string;
   router: Router
 
   constructor() {
