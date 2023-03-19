@@ -2,8 +2,8 @@ import http from "http";
 import { GetMethodOptions, HttpServer } from "./types/http";
 
 export interface Application {
-  listen: (port: number, writeText: string) => void;
-  get: (options: GetMethodOptions) => void;
+  listen: (port: number, onSuccessMethod: () => void) => void;
+  get: (path: string, handlers: { write: string }) => void;
 }
 
 /**
@@ -25,10 +25,8 @@ export class TypeExpress implements Application {
     });
   }
 
-  listen(port: number): void {
-    this.server.listen(port, () => {
-      console.log(`Application is running on: http://localhost:${port}`);
-    });
+  listen(port: number, onSuccessMethod: () => void): void {
+    this.server.listen(port, onSuccessMethod);
   }
 
   get(): void {
