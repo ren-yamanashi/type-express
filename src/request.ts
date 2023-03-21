@@ -7,22 +7,23 @@ export type ExtractRouteParams<T extends string> =
     ? { [K in Param]: string }
     : {};
 
-export class TypeExpressRequest {
+export class TypeExpressRequest<T extends string> {
   url!: string;
-  params!: {
-    [key: string]: string;
-  };
+  params!: ExtractRouteParams<T>;
 
   constructor(private request: IncomingMessage) {}
 
-  getParams(path: string, url: string): void {
+  getParams(path: T, url: string): void {
     const urlParts = url.split("/").reverse();
     const paths = path.split("/").reverse();
-    let params: { [key: string]: any } = {};
+    let params: Partial<ExtractRouteParams<T>> = {};
     paths.forEach((p, i) => {
-      if (/:/.test(p)) params[p.slice(1)] = String(urlParts[i]);
+      if (/:/.test(p))
+        params[p.slice(1) as keyof ExtractRouteParams<T>] = String(
+          urlParts[i]
+        ) as ExtractRouteParams<T>[keyof ExtractRouteParams<T>];
     });
 
-    this.params = params;
+    this.params = params as ExtractRouteParams<T>;
   }
 }

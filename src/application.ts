@@ -4,7 +4,7 @@ import { Router } from "./router/route";
 import { Handlers } from "./types";
 export interface Application {
   listen: (port: number, onSuccess: () => void) => void;
-  get: (path: string, handlers: Handlers) => void;
+  get: <T extends string>(path: T, handlers: Handlers<T>) => void;
 }
 
 export class TypeExpress implements Application {
@@ -22,7 +22,7 @@ export class TypeExpress implements Application {
     this.server.listen(port, onSuccess);
   }
 
-  get(path: string, handlers: Handlers): void {
+  get<T extends string>(path: T, handlers: Handlers<T>): void {
     this.router.addToStack({
       path,
       handlers,
