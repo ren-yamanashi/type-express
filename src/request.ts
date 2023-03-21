@@ -8,7 +8,6 @@ export type ExtractRouteParams<T extends string> =
     : {};
 
 export class TypeExpressRequest<T extends string> {
-  url!: string;
   params!: ExtractRouteParams<T>;
 
   constructor(private request: IncomingMessage) {}
