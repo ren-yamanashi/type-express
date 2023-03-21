@@ -10,7 +10,7 @@ app.get("/users", (req, res) => {
   res.send("Get Users!");
 });
 app.get("/users/:id", (req, res) => {
-  res.send("Get User!");
+  res.send(JSON.stringify(req.params.id));
 });
 
 app.listen(PORT, () => {
