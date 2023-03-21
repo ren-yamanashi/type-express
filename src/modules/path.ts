@@ -1,3 +1,5 @@
+import { ExtractRouteParams } from "../request";
+
 export const matchPathWithUrl = (path: string, url: string): boolean => {
   if (path.slice(-1) !== "/") path = `${path}/`;
   if (url.slice(-1) !== "/") url = `${url}/`;
@@ -10,17 +12,20 @@ export const matchPathWithUrl = (path: string, url: string): boolean => {
     .includes(false);
 };
 
-export const getParam = (
-  path: string,
+export const getParams = <T extends string>(
+  path: T,
   url: string
-): { [key: string]: any } | null => {
+): ExtractRouteParams<T> => {
   const urlParts = url.split("/").reverse();
   const paths = path.split("/").reverse();
-  let params: { [key: string]: any } = {};
+  let params: Partial<ExtractRouteParams<T>> = {};
+
   paths.forEach((p, i) => {
-    if (/:/.test(p)) params[p.slice(1)] = urlParts[i];
+    if (/:/.test(p))
+      params[p.slice(1) as keyof ExtractRouteParams<T>] = String(
+        urlParts[i]
+      ) as ExtractRouteParams<T>[keyof ExtractRouteParams<T>];
   });
 
-  if (Object.keys(params).length === 0) return null;
-  return params;
+  return params as ExtractRouteParams<T>;
 };

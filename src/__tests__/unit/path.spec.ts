@@ -1,4 +1,4 @@
-import { getParam, matchPathWithUrl } from "../../modules/path";
+import { getParams, matchPathWithUrl } from "../../modules/path";
 
 describe("matchPathWithUrl", () => {
   test("/user", async () => {
@@ -28,21 +28,21 @@ describe("matchPathWithUrl", () => {
   });
 });
 
-describe("getParam", () => {
+describe("getParams", () => {
   test("/user", async () => {
-    expect(getParam("/user", "/user")).toEqual(null);
+    expect(getParams("/user", "/user")).toEqual(null);
   });
   test("/user/:id", async () => {
-    expect(getParam("/user/:id", "/user/2")).toEqual({ id: "2" });
-    expect(getParam("/user/:id", "/user/sample-user-id")).toEqual({
+    expect(getParams("/user/:id", "/user/2")).toEqual({ id: "2" });
+    expect(getParams("/user/:id", "/user/sample-user-id")).toEqual({
       id: "sample-user-id",
     });
   });
   test("/user/:id/books/:bookId `true`", async () => {
     expect(
-      getParam("/user/:id/books/:bookId", "/user/123/books/sample-book-id")
+      getParams("/user/:id/books/:bookId", "/user/123/books/sample-book-id")
     ).toEqual({ id: "123", bookId: "sample-book-id" });
-    expect(getParam("/user/:id/books/:bookId", "/user/123/books/1000")).toEqual(
+    expect(getParams("/user/:id/books/:bookId", "/user/123/books/1000")).toEqual(
       {
         id: "123",
         bookId: "1000",
