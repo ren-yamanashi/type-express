@@ -10,10 +10,10 @@ app.get("/users", (req, res) => {
   res.send("Get Users!");
 });
 app.get("/users/:id", (req, res) => {
-  res.send(JSON.stringify(req.params.id));
+  res.send(req.params.id);
 });
 app.get("/users/:id/textbook/:textbookId", (req, res) => {
-  res.send(JSON.stringify(req.params.textbookId));
+  res.send(JSON.stringify(req.params.id));
 });
 
 app.listen(PORT, () => {

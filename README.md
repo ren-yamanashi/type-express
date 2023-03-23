@@ -25,7 +25,7 @@ yarn start:watch-dev # tsc-watch で起動
 3. express の動作と比較したい時
 
 ```bash
-cd express_sample # typexpressディレクトリからの相対パス
+cd express_sample # ルートディレクトリからの相対パス
 
 yarn start:dev
 ```
