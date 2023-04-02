@@ -1,4 +1,4 @@
-import { getParams, matchPathWithUrl } from "../../modules/path";
+import { getParams, matchPathWithUrl } from "../../modules/route/path";
 
 describe("matchPathWithUrl", () => {
   test("/user", async () => {
@@ -30,7 +30,7 @@ describe("matchPathWithUrl", () => {
 
 describe("getParams", () => {
   test("/user", async () => {
-    expect(getParams("/user", "/user")).toEqual(null);
+    expect(getParams("/user", "/user")).toEqual({} as Object);
   });
   test("/user/:id", async () => {
     expect(getParams("/user/:id", "/user/2")).toEqual({ id: "2" });
@@ -42,11 +42,11 @@ describe("getParams", () => {
     expect(
       getParams("/user/:id/books/:bookId", "/user/123/books/sample-book-id")
     ).toEqual({ id: "123", bookId: "sample-book-id" });
-    expect(getParams("/user/:id/books/:bookId", "/user/123/books/1000")).toEqual(
-      {
-        id: "123",
-        bookId: "1000",
-      }
-    );
+    expect(
+      getParams("/user/:id/books/:bookId", "/user/123/books/1000")
+    ).toEqual({
+      id: "123",
+      bookId: "1000",
+    });
   });
 });

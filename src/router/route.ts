@@ -1,31 +1,45 @@
-import { Handlers } from "../types";
+import { Handlers, HttpRequestMethod } from "../types";
 import { TypeExpressRequest } from "../request";
 import { TypeExpressResponse } from "../response";
-import { HttpServerRequest, HttpServerResponse } from "../types/http";
-import { getParams, matchPathWithUrl } from "../modules/path";
+import { getParams, matchPathWithUrl } from "../modules/route/path";
+import {
+  HttpRequest,
+  HttpServerResponseIncludeRequest,
+} from "../infrastructure/http.interface";
 
 export class Router {
-  stack: { path: string; handlers: Handlers<any> }[];
-  constructor() {
-    this.stack = [];
-  }
-  addToStack<T extends string>(arg: {
+  private routeRegistry = new Map<
+    string,
+    { handlers: Handlers<any>; method: HttpRequestMethod }
+  >();
+
+  public registerRoute<T extends string>(arg: {
     path: string;
     handlers: Handlers<T>;
+    method: HttpRequestMethod;
   }): void {
-    this.stack.push(arg);
+    this.routeRegistry.set(arg.path, {
+      handlers: arg.handlers,
+      method: arg.method,
+    });
   }
-  createRoute(req: HttpServerRequest, res: HttpServerResponse): void {
+
+  public createRoute(
+    req: HttpRequest,
+    res: HttpServerResponseIncludeRequest
+  ): void {
     const url = req.url ?? "";
     const method = req.method;
-    this.stack.forEach((item) => {
-      if (matchPathWithUrl(item.path, url) && method === "GET") {
-        const request = new TypeExpressRequest<typeof item.path>(req);
-        const response = new TypeExpressResponse(res);
-        request.params = getParams(item.path, url);
 
-        item.handlers(request, response);
+    for (const key of this.routeRegistry.keys()) {
+      const route = this.routeRegistry.get(key);
+      if (matchPathWithUrl(key, url) && method === route?.method) {
+        const request = new TypeExpressRequest<typeof key>(req);
+        const response = new TypeExpressResponse(res);
+
+        request.params = getParams(key, url);
+        route.handlers(request, response);
       }
-    });
+    }
   }
 }

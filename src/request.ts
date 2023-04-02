@@ -1,14 +1,8 @@
-import { IncomingMessage } from "http";
-
-export type ExtractRouteParams<T extends string> =
-  T extends `${infer _Start}:${infer Param}/${infer Rest}`
-    ? { [K in Param | keyof ExtractRouteParams<Rest>]: string }
-    : T extends `${infer _Start}:${infer Param}`
-    ? { [K in Param]: string }
-    : {};
+import { HttpRequest } from "./infrastructure/http.interface";
+import { ExtractRouteParams } from "./types/route/extractRouteParams";
 
 export class TypeExpressRequest<T extends string> {
-  params!: ExtractRouteParams<T>;
+  public params!: ExtractRouteParams<T>;
 
-  constructor(private request: IncomingMessage) {}
+  constructor(private request: HttpRequest) {}
 }

@@ -1,31 +1,28 @@
-import { createServer } from "http";
-import { HttpServer } from "./types/http";
+import { IoCContainer } from "./iocContainer";
+import { HttpServer, HttpServerFactory } from "./infrastructure/http.interface";
 import { Router } from "./router/route";
-import { Handlers } from "./types";
-export interface Application {
-  listen: (port: number, onSuccess: () => void) => void;
-  get: <T extends string>(path: T, handlers: Handlers<T>) => void;
-}
+import { Handlers } from "./types/index";
 
-export class TypeExpress implements Application {
-  server: HttpServer;
-  router: Router;
+export class TypeExpress {
+  private server: HttpServer;
+  private router: Router;
 
-  constructor() {
-    this.router = new Router();
-    this.server = createServer((req, res) => {
+  constructor(serverFactory: HttpServerFactory) {
+    this.router = IoCContainer.resolve<Router>("Router");
+    this.server = serverFactory.createServer((req, res) => {
       this.router.createRoute(req, res);
     });
   }
 
-  listen(port: number, onSuccess: () => void): void {
+  public listen(port: number, onSuccess: () => void): void {
     this.server.listen(port, onSuccess);
   }
 
-  get<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.addToStack({
+  public get<T extends string>(path: T, handlers: Handlers<T>): void {
+    this.router.registerRoute({
       path,
       handlers,
+      method: "GET",
     });
   }
 }
