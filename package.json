@@ -8,8 +8,8 @@
     "vitest": "^0.28.5"
   },
   "scripts": {
-    "start:dev": "npx ts-node src/examples/index.ts",
-    "start:watch-dev": "tsc-watch --onSuccess \"node dist/examples/index.js\"",
+    "start": "npx ts-node src/examples/index.ts",
+    "start:watch": "tsc-watch --onSuccess \"node dist/examples/index.js\"",
     "test": "yarn run vitest ./__tests__",
     "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
   }
