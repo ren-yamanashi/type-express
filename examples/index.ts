@@ -1,4 +1,4 @@
-import TypeExpress from "../src";
+import TypeExpress from "typeExpress";
 import { NodeHttpServerFactory } from "../src/plugins/node/httpServerFactory";
 
 const PORT = 8000;

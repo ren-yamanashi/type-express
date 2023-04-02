@@ -1,3 +1,4 @@
+import { IoCContainer } from "./iocContainer";
 import { HttpServer, HttpServerFactory } from "./infrastructure/http.interface";
 import { Router } from "./router/route";
 import { Handlers } from "./types";
@@ -7,7 +8,7 @@ export class TypeExpress {
   private router: Router;
 
   constructor(serverFactory: HttpServerFactory) {
-    this.router = new Router();
+    this.router = IoCContainer.resolve<Router>("Router");
     this.server = serverFactory.createServer((req, res) => {
       this.router.createRoute(req, res);
     });
