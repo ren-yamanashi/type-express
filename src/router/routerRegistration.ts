@@ -1,4 +1,3 @@
-// routerRegistration.ts
 import { IoCContainer } from "../iocContainer";
 import { Router } from "./route";
 

@@ -1,7 +1,7 @@
 import { IoCContainer } from "./iocContainer";
 import { HttpServer, HttpServerFactory } from "./infrastructure/http.interface";
 import { Router } from "./router/route";
-import { Handlers } from "./types";
+import { Handlers } from "./types/index";
 
 export class TypeExpress {
   private server: HttpServer;
@@ -22,6 +22,7 @@ export class TypeExpress {
     this.router.registerRoute({
       path,
       handlers,
+      method: "GET",
     });
   }
 }
