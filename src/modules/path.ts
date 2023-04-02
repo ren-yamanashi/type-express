@@ -1,4 +1,4 @@
-import { ExtractRouteParams } from "../request";
+import { ExtractRouteParams } from "../types/route";
 
 export const matchPathWithUrl = (path: string, url: string): boolean => {
   if (path.slice(-1) !== "/") path = `${path}/`;

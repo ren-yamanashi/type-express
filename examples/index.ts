@@ -1,7 +1,9 @@
-import TypeExpress from "..";
+import TypeExpress from "../src";
+import { NodeHttpServerFactory } from "../src/plugins/node/httpServerFactory";
 
 const PORT = 8000;
-const app = new TypeExpress();
+const serverFactory = new NodeHttpServerFactory();
+const app = new TypeExpress(serverFactory);
 
 app.get("/", (req, res) => {
   res.send("hello World!");

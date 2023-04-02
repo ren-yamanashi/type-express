@@ -1,9 +1,10 @@
-import { ServerResponse } from "http";
+import { HttpResponse } from "./infrastructure/http.interface";
+
 
 export class TypeExpressResponse {
-  constructor(private response: ServerResponse) {}
+  constructor(private response: HttpResponse) {}
 
-  send(message: string): void {
+  public send(message: string): void {
     this.response.setHeader("Content-Type", "text/plain");
     this.response.write(message);
     this.response.end();
