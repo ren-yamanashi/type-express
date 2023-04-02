@@ -3,41 +3,39 @@
 - Express git hub: https://github.com/expressjs/express
 - Node.Js documents: https://nodejs.org/docs
 
-## パッケージマネージャー
+## package manager
 
 yarn
 
-## 📚 開発手順
+## 📚 Development procedure
 
-1. パッケージのインストール
+1. Install package
 
 ```bash
 yarn install
 ```
 
-2. 起動（下記のどちらでも可能）
+2. Stat up (Either of the following)
 
 ```bash
-yarn start:dev       # 通常起動
-yarn start:watch-dev # tsc-watch で起動
+yarn start       # normal
+yarn start:watch # tsc-watch
 ```
 
-3. express の動作と比較したい時
+3. Start up express
 
 ```bash
-cd express_sample # ルートディレクトリからの相対パス
-
-yarn start:dev
+cd express_sample && yarn start:dev
 ```
 
 ## 🚀 Commands
 
 ```bash
 # npx ts-node src/index.ts
-yarn start:dev
+yarn start
 
 # tsc-watch --onSuccess \"node dist/index.js\"
-yarn start:watch-dev
+yarn start:watch
 
 # yarn run vitest ./**tests**
 yarn test
@@ -46,7 +44,7 @@ yarn test
 yarn test:unit
 ```
 
-## ディレクトリ構成
+## Directory structure
 
 ```
 .
@@ -61,9 +59,3 @@ yarn test:unit
     ├── router
     └── types
 ```
-
-## 改善・機能追加案
-- テストファイル作る
-- ダイナミックルーティング
-- スワッガーに書き出す 
-- 自動でテスト
