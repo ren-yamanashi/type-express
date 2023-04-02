@@ -8,7 +8,7 @@ import {
 } from "../infrastructure/http.interface";
 
 export class Router {
-  private routeRegistry = new Map<
+  protected routeRegistry = new Map<
     string,
     { handlers: Handlers<any>; method: HttpRequestMethod }
   >();

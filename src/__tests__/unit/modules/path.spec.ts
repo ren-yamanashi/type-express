@@ -1,4 +1,4 @@
-import { getParams, matchPathWithUrl } from "../../modules/route/path";
+import { getParams, matchPathWithUrl } from "../../../modules/route/path";
 
 describe("matchPathWithUrl", () => {
   test("/user", async () => {
