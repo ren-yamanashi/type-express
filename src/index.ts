@@ -4,6 +4,7 @@ import { TypeExpress } from "./application";
 // 以下の理由によりこのimport文を追加する
 // ・起動時に依存関係が適切に登録されることが保証されたい
 // ・どの依存関係がアプリケーションで使用されているか一目でわかるようにするため、
-import "../src/router/routerRegistration";
+import "./router/route";
+import "./infrastructure/http"
 
 export { TypeExpress };

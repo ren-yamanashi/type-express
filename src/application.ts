@@ -1,15 +1,17 @@
-import { IoCContainer } from "./iocContainer";
-import { HttpServer, HttpServerFactory } from "./infrastructure/http.interface";
+import { container } from "./container";
+import { HttpServer, HttpServerFactory } from "./interfaces/http";
 import { Router } from "./router/route";
-import { Handlers } from "./types/index";
+import { Handlers } from "./types/common";
 
 export class TypeExpress {
   private server: HttpServer;
   private router: Router;
 
-  constructor(serverFactory: HttpServerFactory) {
-    this.router = IoCContainer.resolve<Router>("Router");
-    this.server = serverFactory.createServer((req, res) => {
+  constructor() {
+    // FIXME: ここでコンテナを呼び出したくない。引数として受け取る？？
+    const http = container.resolve<HttpServerFactory>("http");
+    this.router = container.resolve<Router>("router");
+    this.server = http.createServer((req, res) => {
       this.router.createRoute(req, res);
     });
   }

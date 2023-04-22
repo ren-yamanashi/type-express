@@ -1,4 +1,4 @@
-import { HttpResponse } from "./infrastructure/http.interface";
+import { HttpResponse } from "./interfaces/http";
 
 
 export class TypeExpressResponse {
