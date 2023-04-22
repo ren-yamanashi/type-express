@@ -9,12 +9,21 @@ import {
 import { container } from "src/container";
 
 export class Http implements HttpServerFactory {
+  /**
+   * Extracts the request body from the given request object and returns it as a Promise.
+   * 与えられたリクエストオブジェクトからリクエストボディを抽出し、Promiseとして返す。
+   *
+   * @param {CustomIncomingMessage} req - The request object with a compatible `on` method for handling events.
+   *                                      イベント処理用の互換性のある `on` メソッドを持つリクエストオブジェクト。
+   * @param {string | undefined} contentType - The content type of the request.
+   */
   private getRequestBody(
     req: CustomIncomingMessage,
     contentType: string | undefined
-  ): Promise<unknown | Buffer | Error> {
+  ): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const chunks: Uint8Array[] = [];
+
       req.on("data", (chunk) => {
         chunks.push(chunk);
       });
@@ -36,6 +45,7 @@ export class Http implements HttpServerFactory {
       });
     });
   }
+
   private createHttpRequest(
     req: http.IncomingMessage,
     body: unknown
@@ -47,6 +57,7 @@ export class Http implements HttpServerFactory {
       body,
     };
   }
+
   private createHttpResponse(
     req: HttpRequest,
     res: http.ServerResponse
