@@ -1,4 +1,14 @@
 {
+  "name": "type-express",
+  "version": "0.1.0",
+  "main": "/src/index.ts",
+  "scripts": {
+    "build": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js",
+    "start": "npm run build && node dist/examples/index.js",
+    "start:watch": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
+    "test": "yarn run vitest ./__tests__",
+    "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
+  },
   "devDependencies": {
     "@types/node": "^18.14.0",
     "esbuild": "^0.17.15",
@@ -6,12 +16,5 @@
     "nodemon": "^2.0.22",
     "typescript": "^4.9.5",
     "vitest": "^0.28.5"
-  },
-  "scripts": {
-    "build": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js",
-    "start": "npm run build && node dist/examples/index.js",
-    "start:watch": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
-    "test": "yarn run vitest ./__tests__",
-    "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
   }
 }
