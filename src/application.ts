@@ -1,16 +1,15 @@
-import { container } from "./container";
-import { HttpServer, HttpServerFactory } from "./interfaces/http";
+import { HttpServerFactoryKey, RouterKey, container } from "./di";
+import { HttpServer } from "./interfaces/http";
 import { Router } from "./router/route";
 import { Handlers } from "./types/common";
 
 export class TypeExpress {
-  private server: HttpServer;
-  private router: Router;
+  private readonly server: HttpServer;
+  private readonly router: Router;
 
   constructor() {
-    // FIXME: ここでコンテナを呼び出したくない。引数として受け取る？？
-    const http = container.resolve<HttpServerFactory>("http");
-    this.router = container.resolve<Router>("router");
+    const http = container.resolve(HttpServerFactoryKey);
+    this.router = container.resolve(RouterKey);
     this.server = http.createServer((req, res) => {
       this.router.createRoute(req, res);
     });

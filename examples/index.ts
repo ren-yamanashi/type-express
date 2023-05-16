@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
   res.send("hello World!!!");
 });
 app.get("/users", (req, res) => {
-  res.send("Get Users!!!!");
+  res.send("Get Users!");
 });
 app.get("/users/:id", (req, res) => {
   res.send(req.params.id);

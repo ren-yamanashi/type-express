@@ -6,7 +6,6 @@ import {
   HttpServerResponseIncludeRequest,
 } from "../interfaces/http";
 import { HttpRequestMethod } from "src/types/http";
-import { container } from "src/container";
 import { ExtractRouteParams } from "src/types/route";
 
 export class Router {
@@ -100,5 +99,3 @@ export class Router {
     }
   }
 }
-
-container.register<Router>("router", new Router());

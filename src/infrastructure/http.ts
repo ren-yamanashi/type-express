@@ -6,7 +6,6 @@ import {
   HttpServerFactory,
   HttpServerResponseIncludeRequest,
 } from "../interfaces/http";
-import { container } from "src/container";
 
 export class Http implements HttpServerFactory {
   /**
@@ -119,5 +118,3 @@ export class Http implements HttpServerFactory {
     };
   }
 }
-
-container.register<HttpServerFactory>("http", new Http());
