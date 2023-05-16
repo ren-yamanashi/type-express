@@ -1,3 +1,4 @@
+import { HTTP_REQUEST_METHOD } from "./common/http/constance";
 import { HttpServerFactoryKey, RouterKey, container } from "./di";
 import { HttpServer } from "./interfaces/http";
 import { Router } from "./router/route";
@@ -23,7 +24,7 @@ export class TypeExpress {
     this.router.registerRoute({
       path,
       handlers,
-      method: "GET",
+      method: HTTP_REQUEST_METHOD.GET,
     });
   }
 }
