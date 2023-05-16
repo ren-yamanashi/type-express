@@ -14,6 +14,12 @@ export class Router {
     { handlers: Handlers<any>; method: HttpRequestMethod }
   >();
 
+  private formatUrlParams(urlParams: string): string {
+    const regex = /\/$/;
+    if (regex.test(urlParams)) return urlParams.slice(0, -1);
+    return urlParams;
+  }
+
   /**
    * @param path ex:`/user/:userId`
    * @param url ex: `/user/1/`
@@ -84,7 +90,7 @@ export class Router {
     req: HttpRequest,
     res: HttpServerResponseIncludeRequest
   ): void {
-    const url = req.url ?? "";
+    const url = this.formatUrlParams(req.url ?? "");
     const method = req.method;
 
     for (const key of this.routeRegistry.keys()) {

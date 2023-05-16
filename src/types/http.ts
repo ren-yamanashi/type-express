@@ -1,8 +1,4 @@
+import { HTTP_REQUEST_METHOD } from "src/common/http/constance";
+
 export type HttpRequestMethod =
-  | "GET"
-  | "POST"
-  | "DELETE"
-  | "PUT"
-  | "PATCH"
-  | "HEAD"
-  | "OPTIONS";
+  (typeof HTTP_REQUEST_METHOD)[keyof typeof HTTP_REQUEST_METHOD];
