@@ -10,9 +10,9 @@ export interface HttpRequest {
   body?: any;
 }
 export interface CustomIncomingMessage {
-  on(event: "data", listener: (chunk: Uint8Array) => void): void;
-  on(event: "end", listener: () => void): void;
-  on(event: "error", listener: (err: Error) => void): void;
+  on(event: 'data', listener: (chunk: Uint8Array) => void): void;
+  on(event: 'end', listener: () => void): void;
+  on(event: 'error', listener: (err: Error) => void): void;
   on(event: string, listener: Function): void;
 }
 
@@ -48,9 +48,6 @@ export interface HttpServerResponseIncludeRequest extends HttpResponse {
 }
 export interface HttpServerFactory {
   createServer(
-    requestListener: (
-      req: HttpRequest,
-      res: HttpServerResponseIncludeRequest
-    ) => void
+    requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
   ): HttpServer;
 }

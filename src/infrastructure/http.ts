@@ -1,11 +1,11 @@
-import http from "http";
+import http from 'http';
 import {
   CustomIncomingMessage,
   HttpRequest,
   HttpServer,
   HttpServerFactory,
   HttpServerResponseIncludeRequest,
-} from "../interfaces/http";
+} from '../interfaces/http';
 
 export class Http implements HttpServerFactory {
   /**
@@ -18,17 +18,17 @@ export class Http implements HttpServerFactory {
    */
   private getRequestBody(
     req: CustomIncomingMessage,
-    contentType: string | undefined
+    contentType: string | undefined,
   ): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const chunks: Uint8Array[] = [];
 
-      req.on("data", (chunk) => {
+      req.on('data', (chunk) => {
         chunks.push(chunk);
       });
-      req.on("end", () => {
+      req.on('end', () => {
         const buffer: Buffer = Buffer.concat(chunks);
-        if (contentType?.includes("application/json")) {
+        if (contentType?.includes('application/json')) {
           try {
             const jsonBody: unknown = JSON.parse(buffer.toString());
             resolve(jsonBody);
@@ -39,27 +39,24 @@ export class Http implements HttpServerFactory {
           resolve(buffer);
         }
       });
-      req.on("error", (err: Error) => {
+      req.on('error', (err: Error) => {
         reject(err);
       });
     });
   }
 
-  private createHttpRequest(
-    req: http.IncomingMessage,
-    body: unknown
-  ): HttpRequest {
+  private createHttpRequest(req: http.IncomingMessage, body: unknown): HttpRequest {
     return {
-      method: req.method || "",
+      method: req.method || '',
       headers: req.headers as {},
-      url: req.url || "",
+      url: req.url || '',
       body,
     };
   }
 
   private createHttpResponse(
     req: HttpRequest,
-    res: http.ServerResponse
+    res: http.ServerResponse,
   ): HttpServerResponseIncludeRequest {
     return {
       status: undefined,
@@ -82,23 +79,19 @@ export class Http implements HttpServerFactory {
   }
 
   public createServer(
-    requestListener: (
-      req: HttpRequest,
-      res: HttpServerResponseIncludeRequest
-    ) => void
+    requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
   ): HttpServer {
     const server = http.createServer(
       async (req: http.IncomingMessage, res: http.ServerResponse) => {
-        const body: unknown = await this.getRequestBody(
-          req,
-          req.headers["content-type"]
-        );
+        const body: unknown = await this.getRequestBody(req, req.headers['content-type']);
         const httpRequest: HttpRequest = this.createHttpRequest(req, body);
-        const httpResponse: HttpServerResponseIncludeRequest =
-          this.createHttpResponse(httpRequest, res);
+        const httpResponse: HttpServerResponseIncludeRequest = this.createHttpResponse(
+          httpRequest,
+          res,
+        );
 
         requestListener(httpRequest, httpResponse);
-      }
+      },
     );
     return {
       listen: (port: number, callback?: () => void) => {

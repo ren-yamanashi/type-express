@@ -1,7 +1,7 @@
-import { Container, InjectionKey } from "./container";
-import { Http } from "./infrastructure/http";
-import { HttpServerFactory } from "./interfaces/http";
-import { Router } from "./router/route";
+import { Container, InjectionKey } from './container';
+import { Http } from './infrastructure/http';
+import { HttpServerFactory } from './interfaces/http';
+import { Router } from './router/route';
 
 export const container = new Container();
 

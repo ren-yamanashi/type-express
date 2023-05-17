@@ -1,5 +1,5 @@
-import { TypeExpress } from "./application";
-import { registerDI } from "./di";
+import { TypeExpress } from './application';
+import { registerDI } from './di';
 
 registerDI();
-export default new TypeExpress;
+export default new TypeExpress();
