@@ -21,12 +21,15 @@ export interface CustomIncomingMessage {
  * Response
  *
  */
+type OutgoingHttpHeader = number | string | string[];
+interface OutgoingHttpHeaders extends NodeJS.Dict<OutgoingHttpHeader> {}
 export interface HttpResponse {
-  status?: number;
+  statusCode?: number;
   headers?: Record<string, string>;
   setHeader(key: string, value: string): void;
+  getHeaders(): OutgoingHttpHeaders;
   write(content: string | Uint8Array): void;
-  end(): void;
+  end(chunk?: any): void;
   redirect(status: number, url: string): void;
 }
 

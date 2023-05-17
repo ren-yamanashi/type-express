@@ -59,11 +59,12 @@ export class Http implements HttpServerFactory {
     res: http.ServerResponse,
   ): HttpServerResponseIncludeRequest {
     return {
-      status: undefined,
+      statusCode: undefined,
       headers: {},
       setHeader: (key: string, value: string) => {
         res.setHeader(key, value);
       },
+      getHeaders: res.getHeaders,
       write: (content: string | Uint8Array) => {
         res.write(content);
       },
