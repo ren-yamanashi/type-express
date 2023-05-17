@@ -1,11 +1,11 @@
 ```ts
-import typeExpress from "typeExpress";
+import typeExpress from 'typeExpress';
 
-typeExpress.get("/", (req, res) => {
-  res.send("Hello World");
+typeExpress.get('/', (req, res) => {
+  res.send('Hello World');
 });
 
-typeExpress.listen(3000)
+typeExpress.listen(3000);
 ```
 
 ## Examples

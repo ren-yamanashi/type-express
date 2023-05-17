@@ -1,18 +1,12 @@
-import { Handlers } from "../types/common";
-import { TypeExpressRequest } from "../request";
-import { TypeExpressResponse } from "../response";
-import {
-  HttpRequest,
-  HttpServerResponseIncludeRequest,
-} from "../interfaces/http";
-import { HttpRequestMethod } from "src/types/http";
-import { ExtractRouteParams } from "src/types/route";
+import { Handlers } from '../types/common';
+import { TypeExpressRequest } from '../request';
+import { TypeExpressResponse } from '../response';
+import { HttpRequest, HttpServerResponseIncludeRequest } from '../interfaces/http';
+import { HttpRequestMethod } from 'src/types/http';
+import { ExtractRouteParams } from 'src/types/route';
 
 export class Router {
-  private routeRegistry = new Map<
-    string,
-    { handlers: Handlers<any>; method: HttpRequestMethod }
-  >();
+  private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
 
   private formatUrlParams(urlParams: string): string {
     const regex = /\/$/;
@@ -27,11 +21,11 @@ export class Router {
    *      "/user/:id", "/user/books/sample-book-id" -> false
    */
   private matchPathWithUrl(path: string, url: string): boolean {
-    if (path.slice(-1) !== "/") path = `${path}/`;
-    if (url.slice(-1) !== "/") url = `${url}/`;
+    if (path.slice(-1) !== '/') path = `${path}/`;
+    if (url.slice(-1) !== '/') url = `${url}/`;
 
-    const urlParts = url.split("/");
-    const paths = path.split("/");
+    const urlParts = url.split('/');
+    const paths = path.split('/');
 
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
@@ -45,19 +39,16 @@ export class Router {
    * ex: arg: ("/user/:id", "/user/sample-user-id") -> res: {id: "sample-user-id"}
    *     arg: ("/user/:id/books/:bookId", "/user/123/books/1000") -> res: {id: "123",bookId: "1000"}
    */
-  private getParams<T extends string>(
-    path: T,
-    url: string
-  ): ExtractRouteParams<T> {
-    const urlParts = url.split("/").reverse();
-    const paths = path.split("/").reverse();
+  private getParams<T extends string>(path: T, url: string): ExtractRouteParams<T> {
+    const urlParts = url.split('/').reverse();
+    const paths = path.split('/').reverse();
     let params: Partial<ExtractRouteParams<T>> = {};
     for (let i = 0; i <= paths.length; i++) {
       const path = paths[i];
       const urlPart = urlParts[i];
       if (/:/.test(paths[i])) {
         params[path.slice(1) as keyof ExtractRouteParams<T>] = String(
-          urlPart
+          urlPart,
         ) as ExtractRouteParams<T>[keyof ExtractRouteParams<T>];
       }
     }
@@ -86,11 +77,8 @@ export class Router {
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    *              サーバーのレスポンスを表すHttpServerResponseIncludeRequestオブジェクト。
    */
-  public createRoute(
-    req: HttpRequest,
-    res: HttpServerResponseIncludeRequest
-  ): void {
-    const url = this.formatUrlParams(req.url ?? "");
+  public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
+    const url = this.formatUrlParams(req.url ?? '');
     const method = req.method;
 
     for (const key of this.routeRegistry.keys()) {

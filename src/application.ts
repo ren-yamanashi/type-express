@@ -1,8 +1,8 @@
-import { HTTP_REQUEST_METHOD } from "./common/http/constance";
-import { HttpServerFactoryKey, RouterKey, container } from "./di";
-import { HttpServer } from "./interfaces/http";
-import { Router } from "./router/route";
-import { Handlers } from "./types/common";
+import { HTTP_REQUEST_METHOD } from './common/http/constance';
+import { HttpServerFactoryKey, RouterKey, container } from './di';
+import { HttpServer } from './interfaces/http';
+import { Router } from './router/route';
+import { Handlers } from './types/common';
 
 export class TypeExpress {
   private readonly server: HttpServer;
