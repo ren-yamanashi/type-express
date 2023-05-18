@@ -4,8 +4,8 @@
   "main": "/src/index.ts",
   "scripts": {
     "build": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js",
-    "start": "npm run build && node dist/examples/index.js",
-    "start:watch": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
+    "start": "npm run build && node dist/examples/typeExpress/index.js",
+    "start:watch": "esbuild examples/typeExpress/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
     "test": "yarn run vitest ./__tests__",
     "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
   },

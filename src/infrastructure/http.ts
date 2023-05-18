@@ -3,11 +3,11 @@ import {
   CustomIncomingMessage,
   HttpRequest,
   HttpServer,
-  HttpServerFactory,
+  HttpServerFactoryInterface,
   HttpServerResponseIncludeRequest,
 } from '../interfaces/http';
 
-export class Http implements HttpServerFactory {
+export class HttpServerFactory implements HttpServerFactoryInterface {
   /**
    * Extracts the request body from the given request object and returns it as a Promise.
    * 与えられたリクエストオブジェクトからリクエストボディを抽出し、Promiseとして返す。
@@ -59,11 +59,12 @@ export class Http implements HttpServerFactory {
     res: http.ServerResponse,
   ): HttpServerResponseIncludeRequest {
     return {
-      status: undefined,
+      statusCode: undefined,
       headers: {},
       setHeader: (key: string, value: string) => {
         res.setHeader(key, value);
       },
+      getHeaders: res.getHeaders,
       write: (content: string | Uint8Array) => {
         res.write(content);
       },
