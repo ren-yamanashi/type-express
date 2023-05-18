@@ -14,7 +14,7 @@ node_modules/
 .env
 
 # sample file
-express_sample
+examples/express/node_modules/
 
 # dist file
 dist/
