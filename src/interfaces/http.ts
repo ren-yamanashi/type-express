@@ -49,7 +49,7 @@ export interface HttpServer extends Server<HttpRequest, HttpResponse> {}
 export interface HttpServerResponseIncludeRequest extends HttpResponse {
   req: HttpRequest;
 }
-export interface HttpServerFactory {
+export interface HttpServerFactoryInterface {
   createServer(
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
   ): HttpServer;

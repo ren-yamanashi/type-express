@@ -10,6 +10,6 @@ export type BufferEncoding =
   | 'latin1'
   | 'binary'
   | 'hex';
-export interface FileSystem {
+export interface FileSystemInterface {
   readFile(path: PathLike, options?: BufferEncoding | null): Promise<string | Buffer>;
 }

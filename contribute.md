@@ -48,22 +48,24 @@ yarn test:unit
 
 ```
 .
-├── express
-├── express_sample
-│   └── src
+├── examples
+│   ├── typeExpress         // typeExpressの実行サンプルディレクトリ(開発者用)
+│   └── express_sample      // expressの実行サンプルディレクトリ (開発者用)
 │
 └── src
     ├── __mocks__
     ├── __tests__
-    ├── common              // ビジネスロジックを含む再利用されるコード
-    ├── infrastructure      // 必要なモジュールの提供 これはinterfaceに依存しており、DIコンテナに登録される。
-    ├── interface
-    ├── router
-    ├── types
-    ├── application.ts
-    ├── container.ts
+    ├── app                 // ビジネスロジックを格納するディレクトリ
+    │   ├── middleware      // 認証・エラーハンドリングを行うディレクトリ
+    │   ├── router          // リクエストに応じたルーティングを行うディレクトリ
+    |   │   └── route.ts
+    │   ├── request.ts      // httpリクエストの定義(req.paramsなど)
+    │   └── response.ts     // レスポンスの処理(res.send, res.sendFileなど)
+    │
+    ├── helper              // 再利用可能な補助的なコードやヘルパーファンクションを含むディテクトり
+    ├── infrastructure      // 必要なモジュールの提供 これはinterfaceに依存
+    ├── interface           // infrastructureのinterface
+    ├── types               // アプリケーション全体で共有されるtypeファイルを置く
     ├── di.ts               // DIコンテナへの登録を行う
-    ├── index.ts
-    ├── request.ts
-    └── response.ts
+    └── index.ts
 ```

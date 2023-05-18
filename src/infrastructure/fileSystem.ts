@@ -1,7 +1,6 @@
-import fs from "fs"
-import { FileSystem, PathLike, BufferEncoding } from 'src/interfaces/fileSystem';
+import fs from 'fs';
+import { FileSystemInterface } from 'src/interfaces/fileSystem';
 
-
-export class _FileSystem implements FileSystem {
-  public  readFile = fs.promises.readFile
+export class FileSystem implements FileSystemInterface {
+  public readFile = fs.promises.readFile;
 }

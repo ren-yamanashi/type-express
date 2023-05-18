@@ -3,11 +3,11 @@ import {
   CustomIncomingMessage,
   HttpRequest,
   HttpServer,
-  HttpServerFactory,
+  HttpServerFactoryInterface,
   HttpServerResponseIncludeRequest,
 } from '../interfaces/http';
 
-export class Http implements HttpServerFactory {
+export class HttpServerFactory implements HttpServerFactoryInterface {
   /**
    * Extracts the request body from the given request object and returns it as a Promise.
    * 与えられたリクエストオブジェクトからリクエストボディを抽出し、Promiseとして返す。

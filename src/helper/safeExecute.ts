@@ -1,4 +1,4 @@
-import { errorHandler } from './errorHandler';
+import { convertToErrorClass } from './convertToErrorClass';
 
 type SafeExecuteResult<T> = {
   data?: T;
@@ -14,7 +14,7 @@ export const safeExecute = async <T>(
       data,
     };
   } catch (err: unknown) {
-    const error: Error = errorHandler(err);
+    const error: Error = convertToErrorClass(err);
     return { error };
   }
 };
