@@ -19,12 +19,18 @@ export class TypeExpress {
   public listen(port: number, onSuccess: () => void): void {
     this.httpServer.listen(port, onSuccess);
   }
-
   public get<T extends string>(path: T, handlers: Handlers<T>): void {
     this.router.setRouteRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.GET,
+    });
+  }
+  public post<T extends string>(path: T, handlers: Handlers<T>): void {
+    this.router.setRouteRegistry({
+      path,
+      handlers,
+      method: HTTP_REQUEST_METHOD.POST,
     });
   }
 }
