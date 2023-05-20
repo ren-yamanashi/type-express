@@ -6,6 +6,8 @@ import { HttpServerFactoryInterface } from './interfaces/http';
 import { Router } from './app/router/route';
 import { ProcessInterface } from './interfaces/process';
 import { Process } from './infrastructure/process';
+import { RequestFactory } from './app/request';
+import { ResponseFactory } from './app/response';
 
 export const container = new Container();
 
@@ -16,7 +18,7 @@ export const ProcessKey: InjectionKey<ProcessInterface> = Symbol();
 
 export const registerDI = (): void => {
   container.register(HttpServerFactoryKey, new HttpServerFactory());
-  container.register(RouterKey, new Router());
+  container.register(RouterKey, new Router(new RequestFactory(), new ResponseFactory()));
   container.register(FileSystemKey, new FileSystem());
   container.register(ProcessKey, new Process());
 };

@@ -1,12 +1,40 @@
-import { Handlers } from '../../types/common';
-import { TypeExpressRequest } from '../request';
-import { TypeExpressResponse } from '../response';
+import { RequestFactory } from '../request';
+import { ResponseFactory } from '../response';
 import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/http';
 import { HttpRequestMethod } from 'src/types/http';
 import { ExtractRouteParams } from 'src/types/route';
+import { Request } from '../request';
+import { Response } from '../response';
+
+export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
 
 export class Router {
-  private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
+  private routeRegistry: Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>;
+  private requestFactory: RequestFactory;
+  private responseFactory: ResponseFactory;
+
+  constructor(_requestFactory: RequestFactory, _responseFactory: ResponseFactory) {
+    this.requestFactory = _requestFactory;
+    this.responseFactory = _responseFactory;
+    this.routeRegistry = new Map();
+  }
+
+  public setRouteRegistry<T extends string>(arg: {
+    path: string;
+    handlers: Handlers<T>;
+    method: HttpRequestMethod;
+  }): void {
+    this.routeRegistry.set(arg.path, {
+      handlers: arg.handlers,
+      method: arg.method,
+    });
+  }
+
+  public getRouteRegistry(
+    key: string,
+  ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
+    return this.routeRegistry.get(key);
+  }
 
   private formatUrlParams(urlParams: string): string {
     const regex = /\/$/;
@@ -17,7 +45,7 @@ export class Router {
   /**
    * @param path ex:`/user/:userId`
    * @param url ex: `/user/1/`
-   * ex: "/user/:id/books/:bookId", "/user/123/books/sample-book-id" -> true
+   * ex:  "/user/:id/books/:bookId", "/user/123/books/sample-book-id" -> true
    *      "/user/:id", "/user/books/sample-book-id" -> false
    */
   private matchPathWithUrl(path: string, url: string): boolean {
@@ -55,39 +83,22 @@ export class Router {
     return params as ExtractRouteParams<T>;
   }
 
-  public registerRoute<T extends string>(arg: {
-    path: string;
-    handlers: Handlers<T>;
-    method: HttpRequestMethod;
-  }): void {
-    this.routeRegistry.set(arg.path, {
-      handlers: arg.handlers,
-      method: arg.method,
-    });
-  }
-
   /**
    * Iterates through the registered routes, and when a matching route is found,
    * calls the associated handlers with the request and response objects.
-   * 登録されたルートを反復処理し、一致するルートが見つかった場合、
-   * 関連するハンドラーをリクエストオブジェクトとレスポンスオブジェクトを使って呼び出す。
    *
    * @param req - An HttpRequest object representing the incoming request.
-   *              入力リクエストを表すHttpRequestオブジェクト。
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
-   *              サーバーのレスポンスを表すHttpServerResponseIncludeRequestオブジェクト。
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
     const url = this.formatUrlParams(req.url ?? '');
-    const method = req.method;
 
     for (const key of this.routeRegistry.keys()) {
-      const route = this.routeRegistry.get(key);
-      if (this.matchPathWithUrl(key, url) && method === route?.method) {
-        const request = new TypeExpressRequest<typeof key>(req);
-        const response = new TypeExpressResponse(res);
-
-        request.params = this.getParams(key, url);
+      const route = this.getRouteRegistry(key);
+      if (this.matchPathWithUrl(key, url) && req.method === route?.method) {
+        const request = this.requestFactory.create<typeof key>(req);
+        const response = this.responseFactory.create(res);
+        request.setParams(this.getParams(key, url));
         route.handlers(request, response);
       }
     }

@@ -4,9 +4,15 @@ import { safeExecute } from '../helper/safeExecute';
 import { FileSystemInterface } from '../interfaces/fileSystem';
 import { HttpResponse } from '../interfaces/http';
 
-export class TypeExpressResponse {
+export class ResponseFactory {
+  public create(res: HttpResponse): Response {
+    return new Response(res);
+  }
+}
+export class Response {
   private readonly fileSystem: FileSystemInterface;
   private readonly process: ProcessInterface;
+
   constructor(private httpResponse: HttpResponse) {
     this.fileSystem = container.resolve(FileSystemKey);
     this.process = container.resolve(ProcessKey);
