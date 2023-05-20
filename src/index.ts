@@ -1,6 +1,6 @@
 import { TypeExpress } from './app';
-import { registerDI } from './di';
+import { registerContainer } from './di';
 
-registerDI();
+registerContainer();
 
 export default new TypeExpress();

@@ -9,11 +9,13 @@ export class RequestFactory {
 
 export class Request<T extends string> {
   private _params!: ExtractRouteParams<T>;
+
   constructor(private request: HttpRequest) {}
 
   public setParams(params: ExtractRouteParams<T>) {
     this._params = params;
   }
+
   get params(): ExtractRouteParams<T> {
     return this._params;
   }

@@ -16,9 +16,13 @@ export const RouterKey: InjectionKey<Router> = Symbol();
 export const FileSystemKey: InjectionKey<FileSystemInterface> = Symbol();
 export const ProcessKey: InjectionKey<ProcessInterface> = Symbol();
 
-export const registerDI = (): void => {
+export const registerContainer = (): void => {
+  // infrastructure
   container.register(HttpServerFactoryKey, new HttpServerFactory());
-  container.register(RouterKey, new Router(new RequestFactory(), new ResponseFactory()));
   container.register(FileSystemKey, new FileSystem());
   container.register(ProcessKey, new Process());
+  // other
+  const requestFactory = new RequestFactory();
+  const responseFactory = new ResponseFactory();
+  container.register(RouterKey, new Router(requestFactory, responseFactory));
 };

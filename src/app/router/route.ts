@@ -51,10 +51,8 @@ export class Router {
   private matchPathWithUrl(path: string, url: string): boolean {
     if (path.slice(-1) !== '/') path = `${path}/`;
     if (url.slice(-1) !== '/') url = `${url}/`;
-
     const urlParts = url.split('/');
     const paths = path.split('/');
-
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
   }
@@ -92,7 +90,6 @@ export class Router {
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
     const url = this.formatUrlParams(req.url ?? '');
-
     for (const key of this.routeRegistry.keys()) {
       const route = this.getRouteRegistry(key);
       if (this.matchPathWithUrl(key, url) && req.method === route?.method) {
