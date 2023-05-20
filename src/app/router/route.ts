@@ -19,29 +19,11 @@ export class Router {
     this.routeRegistry = new Map();
   }
 
-  public setRouteRegistry<T extends string>(arg: {
-    path: string;
-    handlers: Handlers<T>;
-    method: HttpRequestMethod;
-  }): void {
-    this.routeRegistry.set(arg.path, {
-      handlers: arg.handlers,
-      method: arg.method,
-    });
-  }
-
-  public getRouteRegistry(
-    key: string,
-  ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
-    return this.routeRegistry.get(key);
-  }
-
   private formatUrlParams(urlParams: string): string {
     const regex = /\/$/;
     if (regex.test(urlParams)) return urlParams.slice(0, -1);
     return urlParams;
   }
-
   /**
    * @param path ex:`/user/:userId`
    * @param url ex: `/user/1/`
@@ -56,7 +38,6 @@ export class Router {
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
   }
-
   /**
    *
    * @param path ex:`/user/:userId`
@@ -81,6 +62,21 @@ export class Router {
     return params as ExtractRouteParams<T>;
   }
 
+  public setRouteRegistry<T extends string>(arg: {
+    path: string;
+    handlers: Handlers<T>;
+    method: HttpRequestMethod;
+  }): void {
+    this.routeRegistry.set(arg.path, {
+      handlers: arg.handlers,
+      method: arg.method,
+    });
+  }
+  public getRouteRegistry(
+    key: string,
+  ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
+    return this.routeRegistry.get(key);
+  }
   /**
    * Iterates through the registered routes, and when a matching route is found,
    * calls the associated handlers with the request and response objects.
@@ -89,13 +85,18 @@ export class Router {
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
-    const url = this.formatUrlParams(req.url ?? '');
     for (const key of this.routeRegistry.keys()) {
+      const url = this.formatUrlParams(req.url ?? '');
       const route = this.getRouteRegistry(key);
       if (this.matchPathWithUrl(key, url) && req.method === route?.method) {
         const request = this.requestFactory.create<typeof key>(req);
         const response = this.responseFactory.create(res);
         request.setParams(this.getParams(key, url));
+        switch (req.method) {
+          case 'POST': {
+            request.setBody();
+          }
+        }
         route.handlers(request, response);
       }
     }
