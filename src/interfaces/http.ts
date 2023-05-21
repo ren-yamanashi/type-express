@@ -38,6 +38,11 @@ export interface HttpResponse {
  * Server
  *
  */
+export const HTTP_STATE = {
+  OPEN: 'OPEN',
+  CLOSE: 'CLOSE',
+};
+export type HttpState = (typeof HTTP_STATE)[keyof typeof HTTP_STATE];
 export interface Server<Request, Response> {
   listen(port: number, callback?: () => void): Server<Request, Response>;
   close(callback?: () => void): void;
@@ -45,12 +50,15 @@ export interface Server<Request, Response> {
   emit(event: string, ...args: any[]): boolean;
   once(event: string, callback: () => void): Server<Request, Response>;
 }
-export interface HttpServer extends Server<HttpRequest, HttpResponse> {}
 export interface HttpServerResponseIncludeRequest extends HttpResponse {
   req: HttpRequest;
 }
 export interface HttpServerFactoryInterface {
   createServer(
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
-  ): HttpServer;
+  ): HttpServerInterface;
+}
+export interface HttpServerInterface extends Server<HttpRequest, HttpResponse> {
+  state: string;
+  updateState(httpState: HttpState): void;
 }

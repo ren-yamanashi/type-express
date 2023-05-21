@@ -1,10 +1,12 @@
 import http from 'http';
 import {
   CustomIncomingMessage,
+  HttpState,
   HttpRequest,
-  HttpServer,
+  HttpServerInterface,
   HttpServerFactoryInterface,
   HttpServerResponseIncludeRequest,
+  Server,
 } from '../interfaces/http';
 
 export class HttpServerFactory implements HttpServerFactoryInterface {
@@ -81,8 +83,8 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
 
   public createServer(
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
-  ): HttpServer {
-    const server = http.createServer(
+  ): HttpServerInterface {
+    const server: Server<Request, Response> = http.createServer(
       async (req: http.IncomingMessage, res: http.ServerResponse) => {
         const body: unknown = await this.getRequestBody(req, req.headers['content-type']);
         const httpRequest: HttpRequest = this.createHttpRequest(req, body);
@@ -94,21 +96,37 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
         requestListener(httpRequest, httpResponse);
       },
     );
-    return {
-      listen: (port: number, callback?: () => void) => {
-        server.listen(port, callback);
-        return server;
-      },
-      close: (callback?: () => void) => server.close(callback),
-      on: (event: string, callback: () => void) => {
-        server.on(event, callback);
-        return server;
-      },
-      emit: (event: string, ...args: any[]) => server.emit(event, ...args),
-      once: (event: string, callback: () => void) => {
-        server.once(event, callback);
-        return server;
-      },
-    };
+    return new HttpServer(server);
+  }
+}
+
+class HttpServer implements HttpServerInterface {
+  private static _state: HttpState;
+
+  constructor(private server: Server<Request, Response>) {}
+
+  get state(): HttpState {
+    return HttpServer._state;
+  }
+  public updateState(httpState: HttpState): void {
+    HttpServer._state = httpState;
+  }
+  public listen(port: number, callback?: () => void): Server<Request, Response> {
+    this.server.listen(port, callback);
+    return this.server;
+  }
+  public close(callback?: () => void): void {
+    this.server.close(callback);
+  }
+  public on(event: string, callback: () => void): Server<Request, Response> {
+    this.server.on(event, callback);
+    return this.server;
+  }
+  public emit(event: string, ...args: any[]): boolean {
+    return this.server.emit(event, ...args);
+  }
+  public once(event: string, callback: () => void): Server<Request, Response> {
+    this.server.once(event, callback);
+    return this.server;
   }
 }

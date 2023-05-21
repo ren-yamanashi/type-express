@@ -1,6 +1,12 @@
 import { RequestFactory } from '../request';
 import { ResponseFactory } from '../response';
-import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/http';
+import {
+  HTTP_STATE,
+  HttpRequest,
+  HttpServerInterface,
+  HttpServerResponseIncludeRequest,
+  HttpState,
+} from '../../interfaces/http';
 import { HttpRequestMethod } from 'src/types/http';
 import { Request } from '../request';
 import { Response } from '../response';
@@ -8,9 +14,9 @@ import { formatUrlParams, getParams } from './params';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
 export type MiddlewareHandler = (
-  req?: Request<any>,
-  res?: Response,
-  next?: () => void,
+  req: Request<any>,
+  res: Response,
+  next: () => void,
   err?: unknown,
 ) => unknown;
 export class Router {
@@ -56,7 +62,6 @@ export class Router {
   }
 
   public setMiddlewareRegistry(key: string, handlers: MiddlewareHandler[]): void {
-    console.log('🚀 ~ file: route.ts:59 ~ Router ~ setMiddlewareRegistry ~ key:', key, handlers);
     this.middlewareRegistry.set(key, handlers);
   }
   public getMiddlewareRegistry(key: string): Array<MiddlewareHandler> | undefined {
@@ -69,13 +74,17 @@ export class Router {
    * @param req - An HttpRequest object representing the incoming request.
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    */
-  public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
+  public createRoute(
+    req: HttpRequest,
+    res: HttpServerResponseIncludeRequest,
+    httpServer: HttpServerInterface,
+  ): void {
     for (const key of this.routeRegistry.keys()) {
       const url = formatUrlParams(req.url ?? '');
       const route = this.getRouteRegistry(key);
       if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
       const request = this.requestFactory.create<typeof key>(req);
-      const response = this.responseFactory.create(res);
+      const response = this.responseFactory.create(res, httpServer);
       request.setParams(getParams(key, url));
 
       // NOTE: execute middleware handlers
@@ -83,9 +92,14 @@ export class Router {
         if (path === key || path === '*') {
           const handlers = this.getMiddlewareRegistry(path);
           if (!handlers) break;
-          for (const handler of handlers) {
-            handler(request, response);
-          }
+          let currentHandlerIdx = 0;
+          const next = () => {
+            if (currentHandlerIdx + 1 === handlers.length) {
+              return;
+            }
+            currentHandlerIdx++;
+          };
+          handlers[currentHandlerIdx](request, response, next);
         }
       }
 
