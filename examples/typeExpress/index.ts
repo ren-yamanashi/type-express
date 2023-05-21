@@ -3,9 +3,9 @@ import { users } from './database';
 
 const PORT = 8000;
 
-// typeExpress.use((req, res, next, error) => {
-//   console.log('test');
-// });
+typeExpress.use((req, res, next, error) => {
+  console.log('test');
+});
 
 typeExpress.get('/', (req, res) => {
   res.send('Hello World!');

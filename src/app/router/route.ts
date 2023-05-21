@@ -2,28 +2,28 @@ import { RequestFactory } from '../request';
 import { ResponseFactory } from '../response';
 import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/http';
 import { HttpRequestMethod } from 'src/types/http';
-import { ExtractRouteParams } from 'src/types/route';
 import { Request } from '../request';
 import { Response } from '../response';
+import { formatUrlParams, getParams } from './params';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
-
+export type MiddlewareHandler = (
+  req?: Request<any>,
+  res?: Response,
+  next?: () => void,
+  err?: unknown,
+) => unknown;
 export class Router {
-  private routeRegistry: Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>;
+  private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
+  private middlewareRegistry = new Map<string, MiddlewareHandler[]>();
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
 
   constructor(_requestFactory: RequestFactory, _responseFactory: ResponseFactory) {
     this.requestFactory = _requestFactory;
     this.responseFactory = _responseFactory;
-    this.routeRegistry = new Map();
   }
 
-  private formatUrlParams(urlParams: string): string {
-    const regex = /\/$/;
-    if (regex.test(urlParams)) return urlParams.slice(0, -1);
-    return urlParams;
-  }
   /**
    * @param path ex:`/user/:userId`
    * @param url ex: `/user/1/`
@@ -37,29 +37,6 @@ export class Router {
     const paths = path.split('/');
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
-  }
-  /**
-   *
-   * @param path ex:`/user/:userId`
-   * @param url ex: `/user/1/`
-   * @returns ex: {userId: 1}
-   * ex: arg: ("/user/:id", "/user/sample-user-id") -> res: {id: "sample-user-id"}
-   *     arg: ("/user/:id/books/:bookId", "/user/123/books/1000") -> res: {id: "123",bookId: "1000"}
-   */
-  private getParams<T extends string>(path: T, url: string): ExtractRouteParams<T> {
-    const urlParts = url.split('/').reverse();
-    const paths = path.split('/').reverse();
-    let params: Partial<ExtractRouteParams<T>> = {};
-    for (let i = 0; i <= paths.length; i++) {
-      const path = paths[i];
-      const urlPart = urlParts[i];
-      if (/:/.test(paths[i])) {
-        params[path.slice(1) as keyof ExtractRouteParams<T>] = String(
-          urlPart,
-        ) as ExtractRouteParams<T>[keyof ExtractRouteParams<T>];
-      }
-    }
-    return params as ExtractRouteParams<T>;
   }
 
   public setRouteRegistry<T extends string>(arg: {
@@ -77,6 +54,14 @@ export class Router {
   ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
     return this.routeRegistry.get(key);
   }
+
+  public setMiddlewareRegistry(key: string, handlers: MiddlewareHandler[]): void {
+    console.log('🚀 ~ file: route.ts:59 ~ Router ~ setMiddlewareRegistry ~ key:', key, handlers);
+    this.middlewareRegistry.set(key, handlers);
+  }
+  public getMiddlewareRegistry(key: string): Array<MiddlewareHandler> | undefined {
+    return this.middlewareRegistry.get(key);
+  }
   /**
    * Iterates through the registered routes, and when a matching route is found,
    * calls the associated handlers with the request and response objects.
@@ -86,19 +71,30 @@ export class Router {
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
     for (const key of this.routeRegistry.keys()) {
-      const url = this.formatUrlParams(req.url ?? '');
+      const url = formatUrlParams(req.url ?? '');
       const route = this.getRouteRegistry(key);
-      if (this.matchPathWithUrl(key, url) && req.method === route?.method) {
-        const request = this.requestFactory.create<typeof key>(req);
-        const response = this.responseFactory.create(res);
-        request.setParams(this.getParams(key, url));
-        switch (req.method) {
-          case 'POST': {
-            request.setBody();
+      if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
+      const request = this.requestFactory.create<typeof key>(req);
+      const response = this.responseFactory.create(res);
+      request.setParams(getParams(key, url));
+
+      // NOTE: execute middleware handlers
+      for (const path of this.middlewareRegistry.keys()) {
+        if (path === key || path === '*') {
+          const handlers = this.getMiddlewareRegistry(path);
+          if (!handlers) break;
+          for (const handler of handlers) {
+            handler(request, response);
           }
         }
-        route.handlers(request, response);
       }
+
+      switch (req.method) {
+        case 'POST': {
+          request.setBody(req.body);
+        }
+      }
+      route.handlers(request, response);
     }
   }
 }

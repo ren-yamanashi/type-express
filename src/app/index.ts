@@ -1,7 +1,9 @@
 import { HTTP_REQUEST_METHOD } from '../helper/constance';
 import { HttpServerFactoryKey, RouterKey, container } from '../di';
 import { HttpServer, HttpServerFactoryInterface } from '../interfaces/http';
-import { Handlers, Router } from './router/route';
+import { Handlers, MiddlewareHandler, Router } from './router/route';
+import { flattenArray } from '../helper/flattenArray';
+import { findPathFromArray } from '../helper/findPathFromArray';
 
 export class TypeExpress {
   private readonly httpServerFactory: HttpServerFactoryInterface;
@@ -32,5 +34,17 @@ export class TypeExpress {
       handlers,
       method: HTTP_REQUEST_METHOD.POST,
     });
+  }
+
+  public use(...args: (string | MiddlewareHandler | MiddlewareHandler[])[]) {
+    // disambiguate typeExpress.use([fn])
+    const argArr = flattenArray(args);
+    if (!argArr.length) {
+      throw new TypeError('typeExpress.use() requires a middleware function');
+    }
+    
+    const path = findPathFromArray(argArr) ?? '*';
+    const handlers = argArr.filter((arg) => arg !== path && typeof arg === 'function');
+    this.router.setMiddlewareRegistry(path, handlers);
   }
 }
