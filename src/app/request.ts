@@ -25,9 +25,9 @@ export class Request<T extends string> {
     return this._params;
   }
   get body(): { [key: string]: unknown } | undefined {
-    // TODO: バイナリやテキストなどにも対応する
+    // TODO: binary and text
     const obj = convertJSONtoObject(this._body);
-    // TODO: エラーハンドリング
+    // TODO: error handling
     if (obj instanceof Error) return;
 
     return obj;

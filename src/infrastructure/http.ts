@@ -1,7 +1,6 @@
 import http from 'http';
 import {
   CustomIncomingMessage,
-  HttpState,
   HttpRequest,
   HttpServerInterface,
   HttpServerFactoryInterface,
@@ -101,16 +100,7 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
 }
 
 class HttpServer implements HttpServerInterface {
-  private static _state: HttpState;
-
   constructor(private server: Server<Request, Response>) {}
-
-  get state(): HttpState {
-    return HttpServer._state;
-  }
-  public updateState(httpState: HttpState): void {
-    HttpServer._state = httpState;
-  }
   public listen(port: number, callback?: () => void): Server<Request, Response> {
     this.server.listen(port, callback);
     return this.server;

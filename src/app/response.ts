@@ -2,18 +2,18 @@ import { ProcessInterface } from 'src/interfaces/process';
 import { FileSystemKey, ProcessKey, container } from '../di';
 import { safeExecute } from '../helper/safeExecute';
 import { FileSystemInterface } from '../interfaces/fileSystem';
-import { HTTP_STATE, HttpResponse, HttpServerInterface } from '../interfaces/http';
+import { HttpResponse } from '../interfaces/http';
 
 export class ResponseFactory {
-  public create(res: HttpResponse, httpServer: HttpServerInterface): Response {
-    return new Response(res, httpServer);
+  public create(res: HttpResponse): Response {
+    return new Response(res);
   }
 }
 export class Response {
   private readonly fileSystem: FileSystemInterface;
   private readonly process: ProcessInterface;
 
-  constructor(private httpResponse: HttpResponse, private httpServer: HttpServerInterface) {
+  constructor(private httpResponse: HttpResponse) {
     this.fileSystem = container.resolve(FileSystemKey);
     this.process = container.resolve(ProcessKey);
   }
@@ -22,7 +22,6 @@ export class Response {
     this.httpResponse.setHeader('Content-Type', 'text/plain');
     this.httpResponse.write(message);
     this.httpResponse.end();
-    this.httpServer.updateState(HTTP_STATE.CLOSE);
   }
 
   public async sendFile(filePath: string): Promise<void | Error> {
@@ -33,7 +32,6 @@ export class Response {
       console.error(error);
       this.httpResponse.statusCode = 500;
       this.httpResponse.end(error.message);
-      this.httpServer.updateState(HTTP_STATE.CLOSE);
     }
     this.httpResponse.statusCode = 200;
     // TODO: ファイル拡張子によって自動的にheaderの内容を変える
@@ -41,6 +39,5 @@ export class Response {
     this.httpResponse.setHeader('Content-Type', 'text/html');
     this.httpResponse.write(data ?? '');
     this.httpResponse.end();
-    this.httpServer.updateState(HTTP_STATE.CLOSE);
   }
 }
