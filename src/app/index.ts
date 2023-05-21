@@ -35,6 +35,20 @@ export class TypeExpress {
       method: HTTP_REQUEST_METHOD.POST,
     });
   }
+  public put<T extends string>(path: T, handlers: Handlers<T>): void {
+    this.router.setRouteRegistry({
+      path,
+      handlers,
+      method: HTTP_REQUEST_METHOD.PUT,
+    });
+  }
+  public delete<T extends string>(path: T, handlers: Handlers<T>): void {
+    this.router.setRouteRegistry({
+      path,
+      handlers,
+      method: HTTP_REQUEST_METHOD.DELETE,
+    });
+  }
   public use<T extends string>(
     ...args: (T | MiddlewareHandler<T> | MiddlewareHandler<T>[])[]
   ): void | Error {

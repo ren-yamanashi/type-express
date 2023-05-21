@@ -16,6 +16,7 @@ export type MiddlewareHandler<T extends string> = (
 export class Router {
   private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
   private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
+  private currentHandlerIdx: number = 0;
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
 
@@ -38,6 +39,13 @@ export class Router {
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
   }
+
+  private incrementCurrentHandlerIdx = (): void => {
+    this.currentHandlerIdx++;
+  };
+  private initCurrentHandlerIdx = (): void => {
+    this.currentHandlerIdx = 0;
+  };
 
   public setRouteRegistry<T extends string>(arg: {
     path: string;
@@ -72,30 +80,28 @@ export class Router {
    * @param req - An HttpRequest object representing the incoming request.
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    */
-  public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void | Error {
+  public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
     for (const key of this.routeRegistry.keys()) {
       const url = formatUrlParams(req.url ?? '');
       const route = this.getRouteRegistry(key);
-      if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
-
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res);
+
+      if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
       request.setParams(getParams(key, url));
 
       // NOTE: execute middleware handlers
       for (const path of this.middlewareRegistry.keys()) {
-        if (path !== key && path !== '*') break;
-
         const handlers = this.getMiddlewareRegistry(path);
-        if (!handlers?.length) break;
+        if ((path !== key && path !== '*') || !handlers?.length) break;
 
         // TODO: error handler
-        let currentHandlerIdx = 0;
+        this.initCurrentHandlerIdx()
         const next = () => {
-          currentHandlerIdx += 1;
-          if (handlers[currentHandlerIdx]) {
+          this.incrementCurrentHandlerIdx();
+          if (handlers[this.currentHandlerIdx]) {
             try {
-              handlers[currentHandlerIdx](request, response, next);
+              handlers[this.currentHandlerIdx](request, response, next);
             } catch (error) {
               console.error(error);
             }
@@ -103,17 +109,20 @@ export class Router {
         };
 
         try {
-          handlers[currentHandlerIdx](request, response, next);
+          handlers[this.currentHandlerIdx](request, response, next);
         } catch (error) {
           console.error(error);
         }
 
         // NOTE: next() was not called in the last middleware, so stop processing
-        if (currentHandlerIdx < handlers.length) break;
+        if (this.currentHandlerIdx < handlers.length) break;
       }
 
       switch (req.method) {
         case 'POST': {
+          request.setBody(req.body);
+        }
+        case 'PUT': {
           request.setBody(req.body);
         }
       }
