@@ -13,15 +13,15 @@ import { Response } from '../response';
 import { formatUrlParams, getParams } from './params';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
-export type MiddlewareHandler = (
-  req: Request<any>,
+export type MiddlewareHandler<T extends string> = (
+  req: Request<T>,
   res: Response,
   next: () => void,
   err?: unknown,
 ) => unknown;
 export class Router {
   private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
-  private middlewareRegistry = new Map<string, MiddlewareHandler[]>();
+  private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
 
@@ -61,10 +61,14 @@ export class Router {
     return this.routeRegistry.get(key);
   }
 
-  public setMiddlewareRegistry(key: string, handlers: MiddlewareHandler[]): void {
-    this.middlewareRegistry.set(key, handlers);
+  public setMiddlewareRegistry(key: string, handlers: MiddlewareHandler<any>[]): void {
+    if (this.middlewareRegistry.has(key)) {
+      this.middlewareRegistry.get(key)?.push(...handlers);
+    } else {
+      this.middlewareRegistry.set(key, handlers);
+    }
   }
-  public getMiddlewareRegistry(key: string): Array<MiddlewareHandler> | undefined {
+  public getMiddlewareRegistry(key: string): Array<MiddlewareHandler<any>> | undefined {
     return this.middlewareRegistry.get(key);
   }
   /**
@@ -78,29 +82,32 @@ export class Router {
     req: HttpRequest,
     res: HttpServerResponseIncludeRequest,
     httpServer: HttpServerInterface,
-  ): void {
+  ): void | Error {
     for (const key of this.routeRegistry.keys()) {
       const url = formatUrlParams(req.url ?? '');
       const route = this.getRouteRegistry(key);
       if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
+
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res, httpServer);
       request.setParams(getParams(key, url));
 
       // NOTE: execute middleware handlers
       for (const path of this.middlewareRegistry.keys()) {
-        if (path === key || path === '*') {
-          const handlers = this.getMiddlewareRegistry(path);
-          if (!handlers) break;
-          let currentHandlerIdx = 0;
-          const next = () => {
-            if (currentHandlerIdx + 1 === handlers.length) {
-              return;
-            }
-            currentHandlerIdx++;
-          };
-          handlers[currentHandlerIdx](request, response, next);
-        }
+        if (path !== key && path !== '*') break;
+
+        const handlers = this.getMiddlewareRegistry(path);
+        if (!handlers?.length) break;
+
+        let idx = 0;
+        const next = () => {
+          idx += 1;
+          if (handlers[idx]) handlers[idx](request, response, next);
+        };
+        handlers[0](request, response, next);
+
+        // NOTE: next() was not called in the last middleware, so stop processing
+        if (idx < handlers.length) break;
       }
 
       switch (req.method) {

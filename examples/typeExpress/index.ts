@@ -3,10 +3,6 @@ import { users } from './database';
 
 const PORT = 8000;
 
-typeExpress.use((req, res, next, error) => {
-  console.log('test');
-});
-
 typeExpress.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -33,6 +29,25 @@ typeExpress.post('/data/create', (req, res) => {
   }
   console.log(users);
   res.send('Received Post Data');
+});
+
+typeExpress.use([
+  (req, res, next, error) => {
+    console.log('test1');
+    next();
+  },
+  (req, res, next, error) => {
+    console.log('test2');
+    next();
+  },
+]);
+typeExpress.use((req, res, next, error) => {
+  console.log('test3');
+  next();
+});
+typeExpress.use('/users/:id', (req, res, next, error) => {
+  console.log('test4');
+  console.log(req.params.id);
 });
 
 typeExpress.listen(PORT, () => {

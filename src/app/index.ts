@@ -35,7 +35,7 @@ export class TypeExpress {
       method: HTTP_REQUEST_METHOD.POST,
     });
   }
-  public use(...args: (string | MiddlewareHandler | MiddlewareHandler[])[]): void | Error {
+  public use<T extends string>(...args: (T | MiddlewareHandler<T> | MiddlewareHandler<T>[])[]): void | Error {
     // disambiguate typeExpress.use([fn])
     const argArr = flattenArray(args);
     if (!argArr.length) {
