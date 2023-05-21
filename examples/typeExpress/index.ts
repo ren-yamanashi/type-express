@@ -1,12 +1,12 @@
 import typeExpress from 'typeExpress';
+import { users } from './database';
 
 const PORT = 8000;
 
-/**
- *
- * Get Method
- *
- */
+// typeExpress.use((req, res, next, error) => {
+//   console.log('test');
+// });
+
 typeExpress.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -23,14 +23,16 @@ typeExpress.get('/users/:id/contents', (req, res) => {
   res.sendFile('/examples/typeExpress/index.html');
 });
 
-/***
- *
- * Post Method
- *
- */
 typeExpress.post('/data/create', (req, res) => {
-  console.log(req.body)
-  res.send('Received POST Data');
+  const data = req.body;
+  if (data) {
+    users.push({
+      id: data.id as number,
+      name: data.name as string,
+    });
+  }
+  console.log(users);
+  res.send('Received Post Data');
 });
 
 typeExpress.listen(PORT, () => {

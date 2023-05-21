@@ -12,9 +12,9 @@ import { ResponseFactory } from './app/response';
 export const container = new Container();
 
 export const HttpServerFactoryKey: InjectionKey<HttpServerFactoryInterface> = Symbol();
-export const RouterKey: InjectionKey<Router> = Symbol();
 export const FileSystemKey: InjectionKey<FileSystemInterface> = Symbol();
 export const ProcessKey: InjectionKey<ProcessInterface> = Symbol();
+export const RouterKey: InjectionKey<Router> = Symbol();
 
 export const registerContainer = (): void => {
   // infrastructure

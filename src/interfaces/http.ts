@@ -7,7 +7,7 @@ export interface HttpRequest {
   method: string;
   headers: { [key: string]: string };
   url: string;
-  body?: any;
+  body?: unknown;
 }
 export interface CustomIncomingMessage {
   on(event: 'data', listener: (chunk: Uint8Array) => void): void;

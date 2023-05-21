@@ -1,4 +1,4 @@
-import { convertToErrorClass } from './convertToErrorClass';
+import { convertToErrorClass } from './convert';
 
 type SafeExecuteResult<T> = {
   data?: T;

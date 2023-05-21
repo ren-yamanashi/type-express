@@ -1,3 +1,4 @@
+import { convertJSONtoObject } from '../helper/convert';
 import { HttpRequest } from '../interfaces/http';
 import { ExtractRouteParams } from '../types/route';
 
@@ -9,21 +10,26 @@ export class RequestFactory {
 
 export class Request<T extends string> {
   private _params!: ExtractRouteParams<T>;
-  private _body!: any;
+  private _body!: unknown;
 
   constructor(private request: HttpRequest) {}
 
   public setParams(params: ExtractRouteParams<T>) {
     this._params = params;
   }
-  public setBody() {
-    this._body = this.request.body;
+  public setBody(body: unknown) {
+    this._body = body;
   }
 
   get params(): ExtractRouteParams<T> {
     return this._params;
   }
-  get body(): any {
-    return this._body;
+  get body(): { [key: string]: unknown } | undefined {
+    // TODO: バイナリやテキストなどにも対応する
+    const obj = convertJSONtoObject(this._body);
+    // TODO: エラーハンドリング
+    if (obj instanceof Error) return;
+
+    return obj;
   }
 }
