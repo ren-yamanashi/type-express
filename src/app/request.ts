@@ -17,6 +17,7 @@ export class Request<T extends string> {
   public setParams(params: ExtractRouteParams<T>) {
     this._params = params;
   }
+
   public setBody(body: unknown) {
     this._body = body;
   }
@@ -24,12 +25,12 @@ export class Request<T extends string> {
   get params(): ExtractRouteParams<T> {
     return this._params;
   }
+
   get body(): { [key: string]: unknown } | undefined {
     // TODO: binary and text
     const obj = convertJSONtoObject(this._body);
     // TODO: error handling
     if (obj instanceof Error) return;
-
     return obj;
   }
 }

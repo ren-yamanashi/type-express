@@ -90,7 +90,7 @@ typeExpress.use((req, res, next, error) => {
 });
 typeExpress.use('/users/:id', (req, res, next, error) => {
   console.log('test4');
-  console.log(req.params.id);
+  console.log(req.params?.id);
 });
 
 /**

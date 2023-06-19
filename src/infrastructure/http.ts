@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import http from 'http';
 import {
   CustomIncomingMessage,
   HttpRequest,
-  HttpServerInterface,
   HttpServerFactoryInterface,
   HttpServerResponseIncludeRequest,
   Server,
+  HttpResponse,
 } from '../interfaces/http';
 
 export class HttpServerFactory implements HttpServerFactoryInterface {
@@ -50,7 +49,7 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
   private createHttpRequest(req: http.IncomingMessage, body: unknown): HttpRequest {
     return {
       method: req.method || '',
-      headers: req.headers as any,
+      headers: req.headers as { [key: string]: string },
       url: req.url || '',
       body,
     };
@@ -83,7 +82,7 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
 
   public createServer(
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
-  ): HttpServerInterface {
+  ): Server<HttpRequest, HttpResponse> {
     const server: Server<Request, Response> = http.createServer(
       async (req: http.IncomingMessage, res: http.ServerResponse) => {
         const body: unknown = await this.getRequestBody(req, req.headers['content-type']);
@@ -100,7 +99,7 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
   }
 }
 
-class HttpServer implements HttpServerInterface {
+class HttpServer implements Server<HttpRequest, HttpResponse> {
   constructor(private server: Server<Request, Response>) {}
   public listen(port: number, callback?: () => void): Server<Request, Response> {
     this.server.listen(port, callback);

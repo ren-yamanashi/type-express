@@ -1,24 +1,24 @@
-import { formatUrlParams, getParams } from 'src/app/router/params';
+import { formatUrlPath, getParams } from 'src/app/router/params';
 
 describe('formatUrlParams function', () => {
   it('should remove the trailing slash if it exists', () => {
-    const input = '/test/url/';
-    const expected = '/test/url';
-    const result = formatUrlParams(input);
+    const input = '/test/url/1234/';
+    const expected = '/test/url/1234';
+    const result = formatUrlPath(input);
     expect(result).toBe(expected);
   });
 
   it('should not modify the string if there is no trailing slash', () => {
     const input = '/test/url';
     const expected = '/test/url';
-    const result = formatUrlParams(input);
+    const result = formatUrlPath(input);
     expect(result).toBe(expected);
   });
 
   it('should handle empty string correctly', () => {
     const input = '';
     const expected = '';
-    const result = formatUrlParams(input);
+    const result = formatUrlPath(input);
     expect(result).toBe(expected);
   });
 });

@@ -7,12 +7,11 @@
     "yarn": "1.22.11"
   },
   "scripts": {
+    "dev": "npm run build && node dist/examples/typeExpress/index.js",
     "build": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js",
-    "start": "npm run build && node dist/examples/typeExpress/index.js",
-    "start:watch": "esbuild examples/typeExpress/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
+    "build:watch": "esbuild examples/typeExpress/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
     "test": "yarn run vitest ./__tests__",
     "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/",
-    "format": "eslint --ext .js,.ts --ignore-path .gitignore --no-error-on-unmatched-pattern ",
     "lint": "eslint . --ext ts --ext js"
   },
   "husky": {
@@ -23,8 +22,7 @@
   },
   "lint-staged": {
     "*.@(ts)": [
-      "yarn lint",
-      "yarn format"
+      "yarn lint"
     ]
   },
   "devDependencies": {

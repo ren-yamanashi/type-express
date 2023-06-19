@@ -4,7 +4,7 @@ import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/
 import { HttpRequestMethod } from 'src/types/http';
 import { Request } from '../request';
 import { Response } from '../response';
-import { formatUrlParams, getParams } from './params';
+import { formatUrlPath, getParams } from './params';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
 export type MiddlewareHandler<T extends string> = (
@@ -17,8 +17,7 @@ export type MiddlewareHandler<T extends string> = (
 export class Router {
   private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
   private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  private currentHandlerIdx: number = 0;
+  private currentHandlerIdx = 0;
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
 
@@ -67,16 +66,21 @@ export class Router {
     return this.routeRegistry.get(key);
   }
 
-  public setMiddlewareRegistry(key: string, handlers: MiddlewareHandler<any>[]): void {
+  public setMiddlewareRegistry<T extends string>(
+    key: string,
+    handlers: MiddlewareHandler<T>[],
+  ): void {
     if (this.middlewareRegistry.has(key)) {
       this.middlewareRegistry.get(key)?.push(...handlers);
-    } else {
-      this.middlewareRegistry.set(key, handlers);
+      return;
     }
+    this.middlewareRegistry.set(key, handlers);
   }
+
   public getMiddlewareRegistry(key: string): Array<MiddlewareHandler<any>> | undefined {
     return this.middlewareRegistry.get(key);
   }
+
   /**
    * Iterates through the registered routes, and when a matching route is found,
    * calls the associated handlers with the request and response objects.
@@ -86,7 +90,7 @@ export class Router {
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
     for (const key of this.routeRegistry.keys()) {
-      const url = formatUrlParams(req.url ?? '');
+      const url = formatUrlPath(req.url ?? '');
       const route = this.getRouteRegistry(key);
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res);

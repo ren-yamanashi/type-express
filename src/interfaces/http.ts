@@ -13,8 +13,7 @@ export interface CustomIncomingMessage {
   on(event: 'data', listener: (chunk: Uint8Array) => void): void;
   on(event: 'end', listener: () => void): void;
   on(event: 'error', listener: (err: Error) => void): void;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  on(event: string, listener: Function): void;
+  on(event: string, listener: typeof Function): void;
 }
 
 /**
@@ -23,13 +22,11 @@ export interface CustomIncomingMessage {
  *
  */
 type OutgoingHttpHeader = number | string | string[];
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface OutgoingHttpHeaders extends NodeJS.Dict<OutgoingHttpHeader> {}
 export interface HttpResponse {
   statusCode?: number;
   headers?: Record<string, string>;
   setHeader(key: string, value: string): void;
-  getHeaders(): OutgoingHttpHeaders;
+  getHeaders(): NodeJS.Dict<OutgoingHttpHeader>;
   write(content: string | Uint8Array): void;
   end(chunk?: any): void;
   redirect(status: number, url: string): void;
@@ -53,7 +50,5 @@ export interface HttpServerResponseIncludeRequest extends HttpResponse {
 export interface HttpServerFactoryInterface {
   createServer(
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
-  ): HttpServerInterface;
+  ): Server<HttpRequest, HttpResponse>;
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface HttpServerInterface extends Server<HttpRequest, HttpResponse> {}

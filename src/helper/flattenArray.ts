@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-export const flattenArray = (input: any[]): any[] =>
-  input.reduce(
-    (acc, val) => (Array.isArray(val) ? acc.concat(flattenArray(val)) : acc.concat(val)),
-    [],
-  );
+export const flattenArray = <T, U>(input: (U | T | T[])[]): (T | U)[] => {
+  return input.reduce<(T | U)[]>((acc, val) => {
+    if (Array.isArray(val)) return acc.concat(flattenArray(val));
+    return acc.concat(val);
+  }, []);
+};
