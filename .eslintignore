@@ -1,5 +1,6 @@
 /dist
 .vscode/
+examples/*
 node_modules
 package.json
 vitest.config.js

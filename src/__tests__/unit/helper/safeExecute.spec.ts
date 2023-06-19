@@ -1,10 +1,9 @@
-
 import { safeExecute } from 'src/helper/safeExecute';
 import { expect } from 'vitest';
 
 describe('safeExecute', () => {
   it('should return data when asyncFunc is successful', async () => {
-    const asyncFunc = async () => 'test';
+    const asyncFunc = () => Promise.resolve('test');
 
     const result = await safeExecute(asyncFunc);
 
@@ -14,7 +13,7 @@ describe('safeExecute', () => {
 
   it('should return an error when asyncFunc throws', async () => {
     const errorMessage = 'Test error';
-    const asyncFunc = async () => {
+    const asyncFunc = () => {
       throw new Error(errorMessage);
     };
 

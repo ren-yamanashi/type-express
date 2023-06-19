@@ -1,4 +1,4 @@
-import { isIncludeMessage } from "./typeCheck";
+import { isIncludeMessage } from './typeCheck';
 
 export const convertToErrorClass = (error: unknown): Error => {
   if (error instanceof Error) return error;
@@ -8,14 +8,10 @@ export const convertToErrorClass = (error: unknown): Error => {
 };
 
 export const convertJSONtoObject = (arg: unknown): { [key: string]: unknown } | Error => {
-  if (arg !== null && typeof arg === 'object') {
-    return arg as { [key: string]: unknown };
-  }
-  if (typeof arg !== 'string') {
-    return new Error('Input must be a string');
-  }
+  if (arg !== null && typeof arg === 'object') return arg as { [key: string]: unknown };
+  if (typeof arg !== 'string') return new Error('Input must be a string');
   try {
-    return JSON.parse(arg);
+    return JSON.parse(arg as string) as { [key: string]: unknown };
   } catch (error) {
     return new Error(`Failed to parse JSON: ${error}`);
   }

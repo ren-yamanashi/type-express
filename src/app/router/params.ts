@@ -1,6 +1,11 @@
 import { ExtractRouteParams } from 'src/types/route';
 
-export const formatUrlParams = (urlParams: string): string => {
+/**
+ * should remove the trailing slash if it exists
+ * @param urlPath ex: `/users/1234/`
+ * @returns ex: `/users/1234`
+ */
+export const formatUrlPath = (urlParams: string): string => {
   const regex = /\/$/;
   if (regex.test(urlParams)) return urlParams.slice(0, -1);
   return urlParams;

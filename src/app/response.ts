@@ -9,6 +9,7 @@ export class ResponseFactory {
     return new Response(res);
   }
 }
+
 export class Response {
   private readonly fileSystem: FileSystemInterface;
   private readonly process: ProcessInterface;

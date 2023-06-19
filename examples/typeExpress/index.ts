@@ -4,9 +4,9 @@ import { createUser, deleteUser, updateUser } from './database';
 const PORT = 8000;
 
 /**
- * 
+ *
  * get method
- * 
+ *
  */
 typeExpress.get('/', (req, res) => {
   res.send('Hello World!');
@@ -25,9 +25,9 @@ typeExpress.get('/users/:id/contents', (req, res) => {
 });
 
 /**
- * 
+ *
  * post method
- * 
+ *
  */
 // NOTE: curl -X POST -H "Content-Type: application/json" -d '{"id":"3", "name":"hoge"}' http://localhost:8000/data/create
 typeExpress.post('/data/create', (req, res) => {
@@ -43,9 +43,9 @@ typeExpress.post('/data/create', (req, res) => {
 });
 
 /**
- * 
+ *
  * put method
- * 
+ *
  */
 // NOTE: curl -X PUT -H "Content-Type: application/json" -d '{"name":"hoge"}' http://localhost:8000/data/2/update
 typeExpress.put('/data/:id/update', (req, res) => {
@@ -58,9 +58,9 @@ typeExpress.put('/data/:id/update', (req, res) => {
 });
 
 /**
- * 
+ *
  * delete method
- * 
+ *
  */
 // NOTE: curl -X DELETE http://localhost:8000/data/2/delete
 typeExpress.delete('/data/:id/delete', (req, res) => {
@@ -70,9 +70,9 @@ typeExpress.delete('/data/:id/delete', (req, res) => {
 });
 
 /**
- * 
+ *
  * use method
- * 
+ *
  */
 typeExpress.use([
   (req, res, next, error) => {
@@ -90,13 +90,13 @@ typeExpress.use((req, res, next, error) => {
 });
 typeExpress.use('/users/:id', (req, res, next, error) => {
   console.log('test4');
-  console.log(req.params.id);
+  console.log(req.params?.id);
 });
 
 /**
- * 
+ *
  * listen method
- * 
+ *
  */
 typeExpress.listen(PORT, () => {
   console.log(`🚀 Application is running on: http://localhost:${PORT}`);

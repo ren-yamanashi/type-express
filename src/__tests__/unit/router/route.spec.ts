@@ -8,7 +8,7 @@ describe('RouteRegistry', () => {
   const responseFactory = new ResponseFactory();
   const router = new Router(requestFactory, responseFactory);
   const path = '/users/:id';
-  const handlers = (req: any, res: any) => {};
+  const handlers = () => undefined;
   const method = HTTP_REQUEST_METHOD.GET;
   it('should set the map correctly', () => {
     router.setRouteRegistry({
