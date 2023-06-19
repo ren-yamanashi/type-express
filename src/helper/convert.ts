@@ -1,4 +1,5 @@
-import { isIncludeMessage } from "./typeCheck";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { isIncludeMessage } from './typeCheck';
 
 export const convertToErrorClass = (error: unknown): Error => {
   if (error instanceof Error) return error;

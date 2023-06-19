@@ -17,6 +17,7 @@ export const formatUrlParams = (urlParams: string): string => {
 export const getParams = <T extends string>(path: T, url: string): ExtractRouteParams<T> => {
   const urlParts = url.split('/').reverse();
   const paths = path.split('/').reverse();
+  // eslint-disable-next-line prefer-const
   let params: Partial<ExtractRouteParams<T>> = {};
   for (let i = 0; i <= paths.length; i++) {
     const path = paths[i];

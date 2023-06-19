@@ -2,22 +2,42 @@
   "name": "type-express",
   "version": "0.1.0",
   "main": "/src/index.ts",
+  "volta": {
+    "node": "20.3.0",
+    "yarn": "1.22.11"
+  },
   "scripts": {
     "build": "esbuild examples/index.ts --bundle --platform=node --outfile=dist/examples/index.js",
     "start": "npm run build && node dist/examples/typeExpress/index.js",
     "start:watch": "esbuild examples/typeExpress/index.ts --bundle --platform=node --outfile=dist/examples/index.js --watch=forever & nodemon dist/examples/index.js",
     "test": "yarn run vitest ./__tests__",
-    "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/"
+    "test:unit": "export TEST_TYPE=unit && vitest run __tests__/unit/",
+    "format": "eslint --ext .js,.ts --ignore-path .gitignore --no-error-on-unmatched-pattern ",
+    "lint": "eslint . --ext ts --ext js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn test:unit",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.@(ts)": [
+      "yarn lint",
+      "yarn format"
+    ]
   },
   "devDependencies": {
     "@types/node": "^18.14.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.6",
-    "@typescript-eslint/parser": "^5.59.6",
+    "@typescript-eslint/eslint-plugin": "^5.59.5",
+    "@typescript-eslint/parser": "^5.59.5",
     "esbuild": "^0.17.15",
-    "eslint": "^8.40.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.8",
     "jsdom": "^21.1.0",
+    "lint-staged": "^13.2.2",
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "typescript": "^4.9.5",

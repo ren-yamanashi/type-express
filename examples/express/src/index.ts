@@ -7,9 +7,9 @@ app.listen(1060, () => {
   console.log('🚀 Application is running on: http://localhost:1060.');
 });
 
-app.use("/user/:id", (req,res) => {
-  console.log(req.params.id)
-})
+app.use('/user/:id', (req) => {
+  console.log(req.params.id);
+});
 app.get('/', (req: express.Request, res: express.Response) => {
   res.send('hello world');
 });

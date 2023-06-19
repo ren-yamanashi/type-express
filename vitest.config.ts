@@ -1,19 +1,19 @@
-import { resolve as _resolve } from "path";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from 'vitest/config';
+import { resolve } from 'path';
 
-const resolve = (p: string) => _resolve(__dirname, p);
+const _resolve = (p: string) => resolve(__dirname, p);
 
 const CovDirPath = {
-  unit: "src/__tests__/unit",
-  integration: "src/__tests__/integration",
-  e2e: "src/__tests__/e2e",
+  unit: 'src/__tests__/unit',
+  integration: 'src/__tests__/integration',
+  e2e: 'src/__tests__/e2e',
 } as const;
 type TestType = keyof typeof CovDirPath;
 
 export default defineConfig({
   resolve: {
     alias: {
-      "~": resolve("."),
+      '~': _resolve('.'),
     },
   },
   test: {
@@ -22,6 +22,6 @@ export default defineConfig({
     coverage: {
       reportsDirectory: CovDirPath[process.env.TEST_TYPE as TestType],
     },
-    environment: "jsdom",
+    environment: 'jsdom',
   },
 });

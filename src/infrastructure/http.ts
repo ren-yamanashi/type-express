@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import http from 'http';
 import {
   CustomIncomingMessage,
@@ -49,7 +50,7 @@ export class HttpServerFactory implements HttpServerFactoryInterface {
   private createHttpRequest(req: http.IncomingMessage, body: unknown): HttpRequest {
     return {
       method: req.method || '',
-      headers: req.headers as {},
+      headers: req.headers as any,
       url: req.url || '',
       body,
     };

@@ -13,6 +13,7 @@ export interface CustomIncomingMessage {
   on(event: 'data', listener: (chunk: Uint8Array) => void): void;
   on(event: 'end', listener: () => void): void;
   on(event: 'error', listener: (err: Error) => void): void;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   on(event: string, listener: Function): void;
 }
 
@@ -22,6 +23,7 @@ export interface CustomIncomingMessage {
  *
  */
 type OutgoingHttpHeader = number | string | string[];
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface OutgoingHttpHeaders extends NodeJS.Dict<OutgoingHttpHeader> {}
 export interface HttpResponse {
   statusCode?: number;
@@ -53,4 +55,5 @@ export interface HttpServerFactoryInterface {
     requestListener: (req: HttpRequest, res: HttpServerResponseIncludeRequest) => void,
   ): HttpServerInterface;
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface HttpServerInterface extends Server<HttpRequest, HttpResponse> {}

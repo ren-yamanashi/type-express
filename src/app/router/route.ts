@@ -13,9 +13,11 @@ export type MiddlewareHandler<T extends string> = (
   next: () => void,
   err?: unknown,
 ) => unknown;
+
 export class Router {
   private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
   private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   private currentHandlerIdx: number = 0;
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
@@ -43,6 +45,7 @@ export class Router {
   private incrementCurrentHandlerIdx = (): void => {
     this.currentHandlerIdx++;
   };
+
   private initCurrentHandlerIdx = (): void => {
     this.currentHandlerIdx = 0;
   };
@@ -57,6 +60,7 @@ export class Router {
       method: arg.method,
     });
   }
+
   public getRouteRegistry(
     key: string,
   ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
@@ -96,7 +100,7 @@ export class Router {
         if ((path !== key && path !== '*') || !handlers?.length) break;
 
         // TODO: error handler
-        this.initCurrentHandlerIdx()
+        this.initCurrentHandlerIdx();
         const next = () => {
           this.incrementCurrentHandlerIdx();
           if (handlers[this.currentHandlerIdx]) {
@@ -121,9 +125,11 @@ export class Router {
       switch (req.method) {
         case 'POST': {
           request.setBody(req.body);
+          break;
         }
         case 'PUT': {
           request.setBody(req.body);
+          break;
         }
       }
 

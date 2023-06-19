@@ -1,5 +1,4 @@
-import { formatUrlParams, getParams } from "src/app/router/params";
-
+import { formatUrlParams, getParams } from 'src/app/router/params';
 
 describe('formatUrlParams function', () => {
   it('should remove the trailing slash if it exists', () => {
