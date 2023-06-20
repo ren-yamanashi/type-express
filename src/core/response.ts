@@ -1,5 +1,5 @@
 import { ProcessInterface } from 'src/interfaces/process';
-import { FileSystemKey, ProcessKey, container } from '../di';
+import { fileSystemKey, processKey, container } from '../di';
 import { safeExecute } from '../helper/safeExecute';
 import { FileSystemInterface } from '../interfaces/fileSystem';
 import { HttpResponse } from '../interfaces/http';
@@ -17,8 +17,8 @@ export class Response {
   private readonly fileSystem: FileSystemInterface;
   private readonly process: ProcessInterface;
   constructor(private httpResponse: HttpResponse) {
-    this.fileSystem = container.resolve(FileSystemKey);
-    this.process = container.resolve(ProcessKey);
+    this.fileSystem = container.resolve(fileSystemKey);
+    this.process = container.resolve(processKey);
   }
 
   public send(message: string): void | Error {

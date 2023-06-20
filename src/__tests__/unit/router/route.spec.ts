@@ -1,6 +1,6 @@
-import { RequestFactory } from 'src/app/request';
-import { ResponseFactory } from 'src/app/response';
-import { Router } from 'src/app/router/route';
+import { RequestFactory } from 'src/core/request';
+import { ResponseFactory } from 'src/core/response';
+import { Router } from 'src/core/route';
 import { HTTP_REQUEST_METHOD } from 'src/helper/constance';
 
 describe('RouteRegistry', () => {

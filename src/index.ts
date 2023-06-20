@@ -1,4 +1,4 @@
-import { TypeExpress } from './app';
+import { TypeExpress } from './core';
 import { registerContainer } from './di';
 
 registerContainer();

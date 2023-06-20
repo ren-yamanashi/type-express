@@ -1,4 +1,4 @@
-import { Request, RequestFactory } from 'src/app/request';
+import { Request, RequestFactory } from 'src/core/request';
 import { HTTP_REQUEST_METHOD } from 'src/helper/constance';
 
 const httpRequestMock = {

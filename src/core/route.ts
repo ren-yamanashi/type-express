@@ -1,29 +1,32 @@
-import { RequestFactory } from '../request';
-import { ResponseFactory } from '../response';
-import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/http';
+import { RequestFactory } from './request';
+import { ResponseFactory } from './response';
+import { HttpRequest, HttpServerResponseIncludeRequest } from '../interfaces/http';
 import { HttpRequestMethod } from 'src/types/http';
-import { Request } from '../request';
-import { Response } from '../response';
-import { formatUrlPath } from './params';
+import { Request } from './request';
+import { Response } from './response';
+import { Middleware } from './middleware';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
-export type MiddlewareHandler<T extends string> = (
-  req: Request<T>,
-  res: Response,
-  next: () => void,
-  err?: unknown,
-) => unknown;
 
 export class Router {
   private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
-  private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
-  private currentHandlerIdx = 0;
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
   constructor(_requestFactory: RequestFactory, _responseFactory: ResponseFactory) {
     this.requestFactory = _requestFactory;
     this.responseFactory = _responseFactory;
   }
+
+  /**
+   * should remove the trailing slash if it exists
+   * @param urlPath ex: `/users/1234/`
+   * @returns ex: `/users/1234`
+   */
+  private formatUrlPath = (urlParams: string): string => {
+    const regex = /\/$/;
+    if (regex.test(urlParams)) return urlParams.slice(0, -1);
+    return urlParams;
+  };
 
   /**
    * @param path ex:`/user/:userId`
@@ -39,14 +42,6 @@ export class Router {
     if (urlParts.length !== paths.length) return false;
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
   }
-
-  private incrementCurrentHandlerIdx = (): void => {
-    this.currentHandlerIdx++;
-  };
-
-  private initCurrentHandlerIdx = (): void => {
-    this.currentHandlerIdx = 0;
-  };
 
   public setRouteRegistry<T extends string>(arg: {
     path: string;
@@ -65,23 +60,6 @@ export class Router {
     return this.routeRegistry.get(key);
   }
 
-  public setMiddlewareRegistry<T extends string>(
-    key: string,
-    handlers: MiddlewareHandler<T>[],
-  ): void {
-    if (this.middlewareRegistry.has(key)) {
-      this.middlewareRegistry.get(key)?.push(...handlers);
-      return;
-    }
-    this.middlewareRegistry.set(key, handlers);
-  }
-
-  public getMiddlewareRegistry<T extends string>(
-    key: string,
-  ): Array<MiddlewareHandler<T>> | undefined {
-    return this.middlewareRegistry.get(key);
-  }
-
   /**
    * Iterates through the registered routes, and when a matching route is found,
    * calls the associated handlers with the request and response objects.
@@ -89,10 +67,14 @@ export class Router {
    * @param req - An HttpRequest object representing the incoming request.
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    */
-  public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
+  public createRoute(
+    req: HttpRequest,
+    res: HttpServerResponseIncludeRequest,
+    middleware: Middleware,
+  ): void {
     // NOTE:
     for (const key of this.routeRegistry.keys()) {
-      const url = formatUrlPath(req.url ?? '');
+      const url = this.formatUrlPath(req.url ?? '');
       const route = this.getRouteRegistry(key);
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res);
@@ -102,33 +84,8 @@ export class Router {
       request.setParams(key, url);
       request.setBody();
 
-      // NOTE: execute middleware handlers
-      for (const path of this.middlewareRegistry.keys()) {
-        const handlers = this.getMiddlewareRegistry(path);
-        if ((path !== key && path !== '*') || !handlers?.length) break;
-
-        // TODO: error handler
-        this.initCurrentHandlerIdx();
-        const next = () => {
-          this.incrementCurrentHandlerIdx();
-          if (!handlers[this.currentHandlerIdx]) return;
-          try {
-            handlers[this.currentHandlerIdx](request, response, next);
-          } catch (error) {
-            console.error(error);
-          }
-        };
-
-        try {
-          handlers[this.currentHandlerIdx](request, response, next);
-        } catch (error) {
-          console.error(error);
-        }
-
-        // NOTE: next() was not called in the last middleware, so stop processing
-        if (this.currentHandlerIdx < handlers.length) break;
-      }
       try {
+        middleware.executeHandlers(key, request, response);
         route.handlers(request, response);
       } catch (error) {
         console.error(error);

@@ -1,9 +1,10 @@
 import { HTTP_REQUEST_METHOD } from '../helper/constance';
-import { HttpServerFactoryKey, RouterKey, container } from '../di';
+import { httpServerFactoryKey, routerKey, container, middlewareKey } from '../di';
 import { HttpServerFactoryInterface, Server, HttpRequest, HttpResponse } from '../interfaces/http';
-import { Handlers, MiddlewareHandler, Router } from './router/route';
+import { Handlers, Router } from './route';
 import { flattenArray } from '../helper/flattenArray';
 import { findPathFromArray } from '../helper/findPathFromArray';
+import { Middleware, MiddlewareHandler } from './middleware';
 
 /**
  * Providing a method
@@ -12,13 +13,14 @@ import { findPathFromArray } from '../helper/findPathFromArray';
 export class TypeExpress {
   private readonly httpServer: Server<HttpRequest, HttpResponse>;
   constructor(
-    private readonly router: Router = container.resolve(RouterKey),
+    private readonly router: Router = container.resolve(routerKey),
+    private readonly middleware: Middleware = container.resolve(middlewareKey),
     private readonly httpServerFactory: HttpServerFactoryInterface = container.resolve(
-      HttpServerFactoryKey,
+      httpServerFactoryKey,
     ),
   ) {
     this.httpServer = this.httpServerFactory.createServer((req, res) => {
-      this.router.createRoute(req, res);
+      this.router.createRoute(req, res, middleware);
     });
   }
 
@@ -72,6 +74,6 @@ export class TypeExpress {
     const handlers = argArr.filter(
       (arg): arg is MiddlewareHandler<T> => arg !== path && typeof arg === 'function',
     );
-    this.router.setMiddlewareRegistry<T>(path, handlers);
+    this.middleware.setMiddlewareRegistry<T>(path, handlers);
   }
 }
