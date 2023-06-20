@@ -22,7 +22,7 @@ export class Router {
    * @param urlPath ex: `/users/1234/`
    * @returns ex: `/users/1234`
    */
-  private formatUrlPath = (urlParams: string): string => {
+  private formatPath = (urlParams: string): string => {
     const regex = /\/$/;
     if (regex.test(urlParams)) return urlParams.slice(0, -1);
     return urlParams;
@@ -43,7 +43,13 @@ export class Router {
     return paths.every((p, i) => (!/:/.test(p) ? p === urlParts[i] : true));
   }
 
-  public setRouteRegistry<T extends string>(arg: {
+  private getRegistry<T extends string>(
+    key: string,
+  ): { handlers: Handlers<T>; method: HttpRequestMethod } | undefined {
+    return this.routeRegistry.get(key);
+  }
+
+  public setRegistry<T extends string>(arg: {
     path: string;
     handlers: Handlers<T>;
     method: HttpRequestMethod;
@@ -52,12 +58,6 @@ export class Router {
       handlers: arg.handlers,
       method: arg.method,
     });
-  }
-
-  public getRouteRegistry<T extends string>(
-    key: string,
-  ): { handlers: Handlers<T>; method: HttpRequestMethod } | undefined {
-    return this.routeRegistry.get(key);
   }
 
   /**
@@ -74,8 +74,8 @@ export class Router {
   ): void {
     // NOTE:
     for (const key of this.routeRegistry.keys()) {
-      const url = this.formatUrlPath(req.url ?? '');
-      const route = this.getRouteRegistry(key);
+      const url = this.formatPath(req.url ?? '');
+      const route = this.getRegistry(key);
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res);
 

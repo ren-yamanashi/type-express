@@ -8,7 +8,7 @@ import { Middleware, MiddlewareHandler } from './middleware';
 
 /**
  * Providing a method
- * Arguments are registered with route
+ * Arguments are registered with route and middleware
  */
 export class TypeExpress {
   private readonly httpServer: Server<HttpRequest, HttpResponse>;
@@ -29,7 +29,7 @@ export class TypeExpress {
   }
 
   public get<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.GET,
@@ -37,7 +37,7 @@ export class TypeExpress {
   }
 
   public post<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.POST,
@@ -45,7 +45,7 @@ export class TypeExpress {
   }
 
   public put<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.PUT,
@@ -53,7 +53,7 @@ export class TypeExpress {
   }
 
   public delete<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.DELETE,
@@ -74,6 +74,6 @@ export class TypeExpress {
     const handlers = argArr.filter(
       (arg): arg is MiddlewareHandler<T> => arg !== path && typeof arg === 'function',
     );
-    this.middleware.setMiddlewareRegistry<T>(path, handlers);
+    this.middleware.setRegistry<T>(path, handlers);
   }
 }

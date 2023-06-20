@@ -11,10 +11,11 @@ export type MiddlewareHandler<T extends string> = (
 export class Middleware {
   private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
 
-  public setMiddlewareRegistry<T extends string>(
-    key: string,
-    handlers: MiddlewareHandler<T>[],
-  ): void {
+  private getRegistry<T extends string>(key: string): Array<MiddlewareHandler<T>> | undefined {
+    return this.middlewareRegistry.get(key);
+  }
+
+  public setRegistry<T extends string>(key: string, handlers: MiddlewareHandler<T>[]): void {
     if (this.middlewareRegistry.has(key)) {
       this.middlewareRegistry.get(key)?.push(...handlers);
       return;
@@ -22,16 +23,10 @@ export class Middleware {
     this.middlewareRegistry.set(key, handlers);
   }
 
-  public getMiddlewareRegistry<T extends string>(
-    key: string,
-  ): Array<MiddlewareHandler<T>> | undefined {
-    return this.middlewareRegistry.get(key);
-  }
-
   public executeHandlers(routePath: string, request: Request<string>, response: Response) {
     for (const path of this.middlewareRegistry.keys()) {
       let currentHandlerIdx = 0;
-      const handlers = this.getMiddlewareRegistry(path);
+      const handlers = this.getRegistry(path);
       if ((path !== routePath && path !== '*') || !handlers?.length) break;
 
       // TODO: error handling
