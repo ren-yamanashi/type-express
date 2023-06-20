@@ -11,15 +11,46 @@ export class RequestFactory {
 export class Request<T extends string> {
   private _params!: ExtractRouteParams<T>;
   private _body!: unknown;
-
   constructor(private request: HttpRequest) {}
 
-  public setParams(params: ExtractRouteParams<T>) {
-    this._params = params;
+  /**
+   *
+   * @param path ex:`/user/:userId`
+   * @param url ex: `/user/1/`
+   * @returns ex: {userId: 1}
+   * ex: arg: ("/user/:id", "/user/sample-user-id") -> res: {id: "sample-user-id"}
+   *     arg: ("/user/:id/books/:bookId", "/user/123/books/1000") -> res: {id: "123",bookId: "1000"}
+   */
+  public setParams<T extends string>(path: T, url: string): void {
+    const urlParts = url.split('/').reverse();
+    const paths = path.split('/').reverse();
+    let params: Partial<ExtractRouteParams<T>> = {};
+    for (let i = 0; i <= paths.length; i++) {
+      const path = paths[i];
+      const urlPart = urlParts[i];
+      if (/:/.test(paths[i])) {
+        params[path.slice(1) as keyof ExtractRouteParams<T>] = String(
+          urlPart,
+        ) as ExtractRouteParams<T>[keyof ExtractRouteParams<T>];
+      }
+    }
+
+    const extractedRouteParams = params as ExtractRouteParams<T>;
+    if (!extractedRouteParams) return;
+    this._params = extractedRouteParams;
   }
 
-  public setBody(body: unknown) {
-    this._body = body;
+  public setBody() {
+    switch (this.request.method) {
+      case 'POST': {
+        this._body = this.request.body;
+        break;
+      }
+      case 'PUT': {
+        this._body = this.request.body;
+        break;
+      }
+    }
   }
 
   get params(): ExtractRouteParams<T> {

@@ -10,10 +10,12 @@ export class ResponseFactory {
   }
 }
 
+/**
+ * Setting and getting response
+ */
 export class Response {
   private readonly fileSystem: FileSystemInterface;
   private readonly process: ProcessInterface;
-
   constructor(private httpResponse: HttpResponse) {
     this.fileSystem = container.resolve(FileSystemKey);
     this.process = container.resolve(ProcessKey);

@@ -4,7 +4,7 @@ import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/
 import { HttpRequestMethod } from 'src/types/http';
 import { Request } from '../request';
 import { Response } from '../response';
-import { formatUrlPath, getParams } from './params';
+import { formatUrlPath } from './params';
 
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
 export type MiddlewareHandler<T extends string> = (
@@ -20,7 +20,6 @@ export class Router {
   private currentHandlerIdx = 0;
   private requestFactory: RequestFactory;
   private responseFactory: ResponseFactory;
-
   constructor(_requestFactory: RequestFactory, _responseFactory: ResponseFactory) {
     this.requestFactory = _requestFactory;
     this.responseFactory = _responseFactory;
@@ -60,9 +59,9 @@ export class Router {
     });
   }
 
-  public getRouteRegistry(
+  public getRouteRegistry<T extends string>(
     key: string,
-  ): { handlers: Handlers<any>; method: HttpRequestMethod } | undefined {
+  ): { handlers: Handlers<T>; method: HttpRequestMethod } | undefined {
     return this.routeRegistry.get(key);
   }
 
@@ -77,7 +76,9 @@ export class Router {
     this.middlewareRegistry.set(key, handlers);
   }
 
-  public getMiddlewareRegistry(key: string): Array<MiddlewareHandler<any>> | undefined {
+  public getMiddlewareRegistry<T extends string>(
+    key: string,
+  ): Array<MiddlewareHandler<T>> | undefined {
     return this.middlewareRegistry.get(key);
   }
 
@@ -89,14 +90,17 @@ export class Router {
    * @param res - An HttpServerResponseIncludeRequest object representing the server response.
    */
   public createRoute(req: HttpRequest, res: HttpServerResponseIncludeRequest): void {
+    // NOTE:
     for (const key of this.routeRegistry.keys()) {
       const url = formatUrlPath(req.url ?? '');
       const route = this.getRouteRegistry(key);
       const request = this.requestFactory.create<typeof key>(req);
       const response = this.responseFactory.create(res);
 
+      // NOTE: setRequest
       if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;
-      request.setParams(getParams(key, url));
+      request.setParams(key, url);
+      request.setBody();
 
       // NOTE: execute middleware handlers
       for (const path of this.middlewareRegistry.keys()) {
@@ -107,12 +111,11 @@ export class Router {
         this.initCurrentHandlerIdx();
         const next = () => {
           this.incrementCurrentHandlerIdx();
-          if (handlers[this.currentHandlerIdx]) {
-            try {
-              handlers[this.currentHandlerIdx](request, response, next);
-            } catch (error) {
-              console.error(error);
-            }
+          if (!handlers[this.currentHandlerIdx]) return;
+          try {
+            handlers[this.currentHandlerIdx](request, response, next);
+          } catch (error) {
+            console.error(error);
           }
         };
 
@@ -125,18 +128,6 @@ export class Router {
         // NOTE: next() was not called in the last middleware, so stop processing
         if (this.currentHandlerIdx < handlers.length) break;
       }
-
-      switch (req.method) {
-        case 'POST': {
-          request.setBody(req.body);
-          break;
-        }
-        case 'PUT': {
-          request.setBody(req.body);
-          break;
-        }
-      }
-
       try {
         route.handlers(request, response);
       } catch (error) {

@@ -5,14 +5,18 @@ import { Handlers, MiddlewareHandler, Router } from './router/route';
 import { flattenArray } from '../helper/flattenArray';
 import { findPathFromArray } from '../helper/findPathFromArray';
 
+/**
+ * Providing a method
+ * Arguments are registered with route
+ */
 export class TypeExpress {
-  private readonly httpServerFactory: HttpServerFactoryInterface;
   private readonly httpServer: Server<HttpRequest, HttpResponse>;
-  private readonly router: Router;
-
-  constructor() {
-    this.router = container.resolve(RouterKey);
-    this.httpServerFactory = container.resolve(HttpServerFactoryKey);
+  constructor(
+    private readonly router: Router = container.resolve(RouterKey),
+    private readonly httpServerFactory: HttpServerFactoryInterface = container.resolve(
+      HttpServerFactoryKey,
+    ),
+  ) {
     this.httpServer = this.httpServerFactory.createServer((req, res) => {
       this.router.createRoute(req, res);
     });
