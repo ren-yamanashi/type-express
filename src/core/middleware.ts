@@ -9,7 +9,7 @@ export type MiddlewareHandler<T extends string> = (
 ) => unknown;
 
 export class Middleware {
-  private middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
+  private readonly middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
 
   private getRegistry<T extends string>(key: string): Array<MiddlewareHandler<T>> | undefined {
     return this.middlewareRegistry.get(key);

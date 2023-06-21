@@ -12,15 +12,21 @@ import { Middleware, MiddlewareHandler } from './middleware';
  */
 export class TypeExpress {
   private readonly httpServer: Server<HttpRequest, HttpResponse>;
-  constructor(
-    private readonly router: Router = container.resolve(routerKey),
-    private readonly middleware: Middleware = container.resolve(middlewareKey),
-    private readonly httpServerFactory: HttpServerFactoryInterface = container.resolve(
-      httpServerFactoryKey,
-    ),
-  ) {
-    this.httpServer = this.httpServerFactory.createServer((req, res) => {
-      this.router.createRoute(req, res, middleware);
+  private readonly router: Router;
+  private readonly middleware: Middleware;
+  constructor({
+    router = container.resolve(routerKey),
+    middleware = container.resolve(middlewareKey),
+    httpServerFactory = container.resolve(httpServerFactoryKey),
+  }: {
+    readonly router?: Router;
+    readonly middleware?: Middleware;
+    readonly httpServerFactory?: HttpServerFactoryInterface;
+  }) {
+    this.router = router;
+    this.middleware = middleware;
+    this.httpServer = httpServerFactory.createServer((req, res) => {
+      router.createRoute(req, res, middleware);
     });
   }
 

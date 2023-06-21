@@ -5,8 +5,16 @@ import { FileSystemInterface } from '../interfaces/fileSystem';
 import { HttpResponse } from '../interfaces/http';
 
 export class ResponseFactory {
-  public create(res: HttpResponse): Response {
-    return new Response(res);
+  public create({
+    fileSystem = container.resolve(fileSystemKey),
+    process = container.resolve(processKey),
+    httpResponse,
+  }: {
+    readonly httpResponse: HttpResponse;
+    readonly fileSystem?: FileSystemInterface;
+    readonly process?: ProcessInterface;
+  }): Response {
+    return new Response(fileSystem, process, httpResponse);
   }
 }
 
@@ -14,12 +22,11 @@ export class ResponseFactory {
  * Setting and getting response
  */
 export class Response {
-  private readonly fileSystem: FileSystemInterface;
-  private readonly process: ProcessInterface;
-  constructor(private httpResponse: HttpResponse) {
-    this.fileSystem = container.resolve(fileSystemKey);
-    this.process = container.resolve(processKey);
-  }
+  constructor(
+    private readonly fileSystem: FileSystemInterface,
+    private readonly process: ProcessInterface,
+    private readonly httpResponse: HttpResponse,
+  ) {}
 
   public send(message: string): void | Error {
     this.httpResponse.setHeader('Content-Type', 'text/plain');

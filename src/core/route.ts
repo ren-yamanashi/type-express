@@ -9,13 +9,14 @@ import { Middleware } from './middleware';
 export type Handlers<T extends string> = (req: Request<T>, res: Response) => void;
 
 export class Router {
-  private routeRegistry = new Map<string, { handlers: Handlers<any>; method: HttpRequestMethod }>();
-  private requestFactory: RequestFactory;
-  private responseFactory: ResponseFactory;
-  constructor(_requestFactory: RequestFactory, _responseFactory: ResponseFactory) {
-    this.requestFactory = _requestFactory;
-    this.responseFactory = _responseFactory;
-  }
+  private readonly routeRegistry = new Map<
+    string,
+    { handlers: Handlers<any>; method: HttpRequestMethod }
+  >();
+  constructor(
+    private readonly requestFactory: RequestFactory,
+    private readonly responseFactory: ResponseFactory,
+  ) {}
 
   /**
    * should remove the trailing slash if it exists
@@ -77,7 +78,7 @@ export class Router {
       const url = this.formatPath(req.url ?? '');
       const route = this.getRegistry(key);
       const request = this.requestFactory.create<typeof key>(req);
-      const response = this.responseFactory.create(res);
+      const response = this.responseFactory.create({ httpResponse: res });
 
       // NOTE: setRequest
       if (!this.matchPathWithUrl(key, url) || req.method !== route?.method) continue;

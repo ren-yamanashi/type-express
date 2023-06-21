@@ -11,7 +11,7 @@ export class RequestFactory {
 export class Request<T extends string> {
   private _params!: ExtractRouteParams<T>;
   private _body!: unknown;
-  constructor(private request: HttpRequest) {}
+  constructor(private readonly request: HttpRequest) {}
 
   /**
    *
