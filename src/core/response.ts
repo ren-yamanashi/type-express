@@ -1,23 +1,32 @@
 import { ProcessInterface } from 'src/interfaces/process';
-import { FileSystemKey, ProcessKey, container } from '../di';
+import { fileSystemKey, processKey, container } from '../di';
 import { safeExecute } from '../helper/safeExecute';
 import { FileSystemInterface } from '../interfaces/fileSystem';
 import { HttpResponse } from '../interfaces/http';
 
 export class ResponseFactory {
-  public create(res: HttpResponse): Response {
-    return new Response(res);
+  public create({
+    fileSystem = container.resolve(fileSystemKey),
+    process = container.resolve(processKey),
+    httpResponse,
+  }: {
+    readonly httpResponse: HttpResponse;
+    readonly fileSystem?: FileSystemInterface;
+    readonly process?: ProcessInterface;
+  }): Response {
+    return new Response(fileSystem, process, httpResponse);
   }
 }
 
+/**
+ * Setting and getting response
+ */
 export class Response {
-  private readonly fileSystem: FileSystemInterface;
-  private readonly process: ProcessInterface;
-
-  constructor(private httpResponse: HttpResponse) {
-    this.fileSystem = container.resolve(FileSystemKey);
-    this.process = container.resolve(ProcessKey);
-  }
+  constructor(
+    private readonly fileSystem: FileSystemInterface,
+    private readonly process: ProcessInterface,
+    private readonly httpResponse: HttpResponse,
+  ) {}
 
   public send(message: string): void | Error {
     this.httpResponse.setHeader('Content-Type', 'text/plain');

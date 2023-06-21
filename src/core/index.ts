@@ -1,20 +1,32 @@
 import { HTTP_REQUEST_METHOD } from '../helper/constance';
-import { HttpServerFactoryKey, RouterKey, container } from '../di';
+import { httpServerFactoryKey, routerKey, container, middlewareKey } from '../di';
 import { HttpServerFactoryInterface, Server, HttpRequest, HttpResponse } from '../interfaces/http';
-import { Handlers, MiddlewareHandler, Router } from './router/route';
+import { Handlers, Router } from './route';
 import { flattenArray } from '../helper/flattenArray';
 import { findPathFromArray } from '../helper/findPathFromArray';
+import { Middleware, MiddlewareHandler } from './middleware';
 
+/**
+ * Providing a method
+ * Arguments are registered with route and middleware
+ */
 export class TypeExpress {
-  private readonly httpServerFactory: HttpServerFactoryInterface;
   private readonly httpServer: Server<HttpRequest, HttpResponse>;
   private readonly router: Router;
-
-  constructor() {
-    this.router = container.resolve(RouterKey);
-    this.httpServerFactory = container.resolve(HttpServerFactoryKey);
-    this.httpServer = this.httpServerFactory.createServer((req, res) => {
-      this.router.createRoute(req, res);
+  private readonly middleware: Middleware;
+  constructor({
+    router = container.resolve(routerKey),
+    middleware = container.resolve(middlewareKey),
+    httpServerFactory = container.resolve(httpServerFactoryKey),
+  }: {
+    readonly router?: Router;
+    readonly middleware?: Middleware;
+    readonly httpServerFactory?: HttpServerFactoryInterface;
+  }) {
+    this.router = router;
+    this.middleware = middleware;
+    this.httpServer = httpServerFactory.createServer((req, res) => {
+      router.createRoute(req, res, middleware);
     });
   }
 
@@ -23,7 +35,7 @@ export class TypeExpress {
   }
 
   public get<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.GET,
@@ -31,7 +43,7 @@ export class TypeExpress {
   }
 
   public post<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.POST,
@@ -39,7 +51,7 @@ export class TypeExpress {
   }
 
   public put<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.PUT,
@@ -47,7 +59,7 @@ export class TypeExpress {
   }
 
   public delete<T extends string>(path: T, handlers: Handlers<T>): void {
-    this.router.setRouteRegistry({
+    this.router.setRegistry({
       path,
       handlers,
       method: HTTP_REQUEST_METHOD.DELETE,
@@ -68,6 +80,6 @@ export class TypeExpress {
     const handlers = argArr.filter(
       (arg): arg is MiddlewareHandler<T> => arg !== path && typeof arg === 'function',
     );
-    this.router.setMiddlewareRegistry<T>(path, handlers);
+    this.middleware.setRegistry<T>(path, handlers);
   }
 }
