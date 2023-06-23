@@ -1,6 +1,6 @@
-import { convertJSONtoObject } from '../helper/convert';
-import { HttpRequest } from '../interfaces/http';
-import { ExtractRouteParams } from '../types/route';
+import { convertJSONtoObject } from '../../helper/convert';
+import { HttpRequest } from '../../interfaces/http';
+import { ExtractRouteParams } from '../routes/types/params';
 
 export class RequestFactory {
   public create<T extends string>(req: HttpRequest): Request<T> {
@@ -41,16 +41,7 @@ export class Request<T extends string> {
   }
 
   public setBody() {
-    switch (this.request.method) {
-      case 'POST': {
-        this._body = this.request.body;
-        break;
-      }
-      case 'PUT': {
-        this._body = this.request.body;
-        break;
-      }
-    }
+    this._body = this.request.body;
   }
 
   get params(): ExtractRouteParams<T> {
@@ -60,8 +51,10 @@ export class Request<T extends string> {
   get body(): { [key: string]: unknown } | undefined {
     // TODO: binary and text
     const obj = convertJSONtoObject(this._body);
-    // TODO: error handling
-    if (obj instanceof Error) return;
+    if (obj instanceof Error) {
+      console.error(obj);
+      return;
+    }
     return obj;
   }
 }

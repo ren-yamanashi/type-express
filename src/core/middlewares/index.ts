@@ -1,17 +1,11 @@
-import { Request } from './request';
-import { Response } from './response';
-
-export type MiddlewareHandler<T extends string> = (
-  req: Request<T>,
-  res: Response,
-  next: () => void,
-  err?: unknown,
-) => unknown;
+import { Request } from '../requests';
+import { Response } from '../responses';
+import { MiddlewareHandler } from './types';
 
 export class Middleware {
   private readonly middlewareRegistry = new Map<string, MiddlewareHandler<any>[]>();
 
-  private getRegistry<T extends string>(key: string): Array<MiddlewareHandler<T>> | undefined {
+  public getRegistry<T extends string>(key: string): Array<MiddlewareHandler<T>> | undefined {
     return this.middlewareRegistry.get(key);
   }
 
@@ -23,13 +17,19 @@ export class Middleware {
     this.middlewareRegistry.set(key, handlers);
   }
 
-  public executeHandlers(routePath: string, request: Request<string>, response: Response) {
+  /**
+   * Iterates through the registered routes, and when a matching route is found,
+   * calls the associated handlers with the request and response objects.
+   *
+   * @param req - An HttpRequest object representing the incoming request.
+   * @param res - An HttpServerResponseIncludeRequest object representing the server response.
+   */
+  public executeHandlers(routePath: string, request: Request<string>, response: Response): void {
     for (const path of this.middlewareRegistry.keys()) {
       let currentHandlerIdx = 0;
       const handlers = this.getRegistry(path);
       if ((path !== routePath && path !== '*') || !handlers?.length) break;
 
-      // TODO: error handling
       const next = () => {
         currentHandlerIdx++;
         if (!handlers[currentHandlerIdx]) return;

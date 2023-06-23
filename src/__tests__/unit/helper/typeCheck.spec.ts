@@ -7,9 +7,7 @@ describe('isIncludeMessage', () => {
       message: 'test',
       otherProperty: 42,
     };
-
     const result = isIncludeMessage(arg);
-
     expect(result).toBe(true);
   });
 
@@ -17,17 +15,13 @@ describe('isIncludeMessage', () => {
     const arg = {
       otherProperty: 42,
     };
-
     const result = isIncludeMessage(arg);
-
     expect(result).toBe(false);
   });
 
   it('should return false if arg is not an object', () => {
     const arg = 'I am not an object';
-
     const result = isIncludeMessage(arg);
-
     expect(result).toBe(false);
   });
 
@@ -35,9 +29,7 @@ describe('isIncludeMessage', () => {
     const arg = {
       message: 42,
     };
-
     const result = isIncludeMessage(arg);
-
     expect(result).toBe(false);
   });
 });

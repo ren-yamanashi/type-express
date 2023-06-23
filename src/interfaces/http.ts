@@ -41,8 +41,6 @@ export interface Server<Request, Response> {
   listen(port: number, callback?: () => void): Server<Request, Response>;
   close(callback?: () => void): void;
   on(event: string, callback: () => void): Server<Request, Response>;
-  emit(event: string, ...args: any[]): boolean;
-  once(event: string, callback: () => void): Server<Request, Response>;
 }
 export interface HttpServerResponseIncludeRequest extends HttpResponse {
   req: HttpRequest;

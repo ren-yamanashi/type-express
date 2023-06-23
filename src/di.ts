@@ -3,12 +3,12 @@ import { FileSystem } from './infrastructure/fileSystem';
 import { HttpServerFactory } from './infrastructure/http';
 import { FileSystemInterface } from './interfaces/fileSystem';
 import { HttpServerFactoryInterface } from './interfaces/http';
-import { Router } from './core/route';
+import { Router } from './core/routes';
 import { ProcessInterface } from './interfaces/process';
 import { Process } from './infrastructure/process';
-import { RequestFactory } from './core/request';
-import { ResponseFactory } from './core/response';
-import { Middleware } from './core/middleware';
+import { RequestFactory } from './core/requests';
+import { ResponseFactory } from './core/responses';
+import { Middleware } from './core/middlewares';
 
 export const container = new Container();
 

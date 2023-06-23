@@ -1,10 +1,12 @@
-import { HTTP_REQUEST_METHOD } from '../helper/constance';
+import { HTTP_REQUEST_METHOD } from './requests/constance';
 import { httpServerFactoryKey, routerKey, container, middlewareKey } from '../di';
 import { HttpServerFactoryInterface, Server, HttpRequest, HttpResponse } from '../interfaces/http';
-import { Handlers, Router } from './route';
-import { flattenArray } from '../helper/flattenArray';
-import { findPathFromArray } from '../helper/findPathFromArray';
-import { Middleware, MiddlewareHandler } from './middleware';
+import { Router } from './routes';
+import { flattenArray } from '../helper/format';
+import { findFirstStrFromArr } from '../helper/find';
+import { Middleware } from './middlewares';
+import { MiddlewareHandler } from './middlewares/types';
+import { RouterHandler } from './routes/types';
 
 /**
  * Providing a method
@@ -34,34 +36,34 @@ export class TypeExpress {
     this.httpServer.listen(port, onSuccess);
   }
 
-  public get<T extends string>(path: T, handlers: Handlers<T>): void {
+  public get<T extends string>(path: T, handler: RouterHandler<T>): void {
     this.router.setRegistry({
       path,
-      handlers,
+      handler,
       method: HTTP_REQUEST_METHOD.GET,
     });
   }
 
-  public post<T extends string>(path: T, handlers: Handlers<T>): void {
+  public post<T extends string>(path: T, handler: RouterHandler<T>): void {
     this.router.setRegistry({
       path,
-      handlers,
+      handler,
       method: HTTP_REQUEST_METHOD.POST,
     });
   }
 
-  public put<T extends string>(path: T, handlers: Handlers<T>): void {
+  public put<T extends string>(path: T, handler: RouterHandler<T>): void {
     this.router.setRegistry({
       path,
-      handlers,
+      handler,
       method: HTTP_REQUEST_METHOD.PUT,
     });
   }
 
-  public delete<T extends string>(path: T, handlers: Handlers<T>): void {
+  public delete<T extends string>(path: T, handler: RouterHandler<T>): void {
     this.router.setRegistry({
       path,
-      handlers,
+      handler,
       method: HTTP_REQUEST_METHOD.DELETE,
     });
   }
@@ -76,7 +78,7 @@ export class TypeExpress {
       console.error(error);
       return error;
     }
-    const path = findPathFromArray(argArr) ?? '*';
+    const path = findFirstStrFromArr(argArr) ?? '*';
     const handlers = argArr.filter(
       (arg): arg is MiddlewareHandler<T> => arg !== path && typeof arg === 'function',
     );

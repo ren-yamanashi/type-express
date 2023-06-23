@@ -1,8 +1,8 @@
 import { ProcessInterface } from 'src/interfaces/process';
-import { fileSystemKey, processKey, container } from '../di';
-import { safeExecute } from '../helper/safeExecute';
-import { FileSystemInterface } from '../interfaces/fileSystem';
-import { HttpResponse } from '../interfaces/http';
+import { fileSystemKey, processKey, container } from '../../di';
+import { safeExecute } from '../../helper/safeExecute';
+import { FileSystemInterface } from '../../interfaces/fileSystem';
+import { HttpResponse } from '../../interfaces/http';
 
 export class ResponseFactory {
   public create({
@@ -28,13 +28,13 @@ export class Response {
     private readonly httpResponse: HttpResponse,
   ) {}
 
-  public send(message: string): void | Error {
+  public send(message: string): void {
     this.httpResponse.setHeader('Content-Type', 'text/plain');
     this.httpResponse.write(message);
     this.httpResponse.end();
   }
 
-  public async sendFile(filePath: string): Promise<void | Error> {
+  public async sendFile(filePath: string): Promise<void> {
     const { data, error } = await safeExecute(() =>
       this.fileSystem.readFile(`${this.process.cwd()}${filePath}`, 'utf8'),
     );

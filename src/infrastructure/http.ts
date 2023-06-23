@@ -112,11 +112,4 @@ class HttpServer implements Server<HttpRequest, HttpResponse> {
     this.server.on(event, callback);
     return this.server;
   }
-  public emit(event: string, ...args: any[]): boolean {
-    return this.server.emit(event, ...args);
-  }
-  public once(event: string, callback: () => void): Server<Request, Response> {
-    this.server.once(event, callback);
-    return this.server;
-  }
 }

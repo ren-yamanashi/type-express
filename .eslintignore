@@ -1,5 +1,7 @@
 /dist
 .vscode/
+src/__mocks__
+src/__tests__
 examples/*
 node_modules
 package.json
