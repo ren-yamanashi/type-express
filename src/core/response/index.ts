@@ -28,12 +28,36 @@ export class Response {
     private readonly httpResponse: HttpResponse,
   ) {}
 
-  public send(message: string): void {
-    this.httpResponse.setHeader('Content-Type', 'text/plain');
+  /**
+   * Sets header information for http requests.
+   * ex: res.setHeader('Access-Control-Allow-Origin', '*');
+   * @param key{string}
+   * @param value{string}
+   */
+  public setHeader(key: string, value: string) {
+    this.httpResponse.setHeader(key, value);
+  }
+
+  /**
+   * Send arbitrary messages to the client.
+   * Default header`s `Contents-Type` value  is `text/plain`
+   * If you want to set the value, please specify it in the second argument
+   *
+   * ex: res.send('Hello World!');
+   * @param message{string}
+   */
+  public send(message: string, contentType = 'text/plain'): void {
+    this.httpResponse.setHeader('Content-Type', contentType);
     this.httpResponse.write(message);
     this.httpResponse.end();
   }
 
+  /**
+   * Send a arbitrary file to a client.
+   * This method will automatically set the appropriate Content-Type header based on the extension of the file being sent.
+   * If you want to set a different Content-Type for a particular case, you can set the header manually using the `res.setHeader()` methods.
+   * @param filePath
+   */
   public async sendFile(filePath: string): Promise<void> {
     const { data, error } = await safeExecute(() =>
       this.fileSystem.readFile(`${this.process.cwd()}${filePath}`, 'utf8'),
@@ -49,15 +73,5 @@ export class Response {
     this.httpResponse.setHeader('Content-Type', 'text/html');
     this.httpResponse.write(data ?? '');
     this.httpResponse.end();
-  }
-
-  public setHeader(key: string, value: string) {
-    this.httpResponse.setHeader(key, value);
-  }
-
-  public set(arg: { [key: string]: string }) {
-    for (const key in arg) {
-      this.httpResponse.setHeader(key, arg[key]);
-    }
   }
 }
