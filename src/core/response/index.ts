@@ -50,4 +50,14 @@ export class Response {
     this.httpResponse.write(data ?? '');
     this.httpResponse.end();
   }
+
+  public setHeader(key: string, value: string) {
+    this.httpResponse.setHeader(key, value);
+  }
+
+  public set(arg: { [key: string]: string }) {
+    for (const key in arg) {
+      this.httpResponse.setHeader(key, arg[key]);
+    }
+  }
 }

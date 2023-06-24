@@ -1,8 +1,8 @@
-import { RequestFactory } from '../requests';
-import { ResponseFactory } from '../responses';
+import { RequestFactory } from '../request';
+import { ResponseFactory } from '../response';
 import { HttpRequest, HttpServerResponseIncludeRequest } from '../../interfaces/http';
-import { HttpRequestMethod } from 'src/core/requests/types';
-import { Middleware } from '../middlewares';
+import { HttpRequestMethod } from 'src/core/request/types';
+import { Middleware } from '../middleware';
 import { removeTrailingSlash } from 'src/helper/format';
 import { checkMatchRoutePathWithUrl } from 'src/helper/checkMatch';
 import { RouterHandler } from './types';

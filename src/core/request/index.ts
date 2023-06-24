@@ -1,6 +1,6 @@
 import { convertJSONtoObject } from '../../helper/convert';
 import { HttpRequest } from '../../interfaces/http';
-import { ExtractRouteParams } from '../routes/types/params';
+import { ExtractRouteParams } from '../router/types/params';
 
 export class RequestFactory {
   public create<T extends string>(req: HttpRequest): Request<T> {

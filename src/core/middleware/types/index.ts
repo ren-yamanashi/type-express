@@ -1,5 +1,5 @@
-import { Request } from 'src/core/requests';
-import { Response } from 'src/core/responses';
+import { Request } from 'src/core/request';
+import { Response } from 'src/core/response';
 
 export type MiddlewareHandler<T extends string> = (
   req: Request<T>,

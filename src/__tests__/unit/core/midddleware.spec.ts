@@ -1,5 +1,5 @@
-import { Middleware } from 'src/core/middlewares';
-import { MiddlewareHandler } from 'src/core/middlewares/types';
+import { Middleware } from 'src/core/middleware';
+import { MiddlewareHandler } from 'src/core/middleware/types';
 
 describe('Middleware', () => {
   describe('setRegistry', () => {
