@@ -68,8 +68,8 @@ export class Response {
       this.httpResponse.end(error.message);
     }
     this.httpResponse.statusCode = 200;
-    // TODO: ファイル拡張子によって自動的にheaderの内容を変える
-    // TODO: ディレクトリだったらエラーを返す
+    // TODO: ファイル拡張子によって自動的にheaderの内容を変える https://github.com/ren-yamanashi/type-express/issues/45
+    // TODO: ディレクトリだったらエラーを返す https://github.com/ren-yamanashi/type-express/issues/45
     this.httpResponse.setHeader('Content-Type', 'text/html');
     this.httpResponse.write(data ?? '');
     this.httpResponse.end();
