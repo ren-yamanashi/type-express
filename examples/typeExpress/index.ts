@@ -9,7 +9,7 @@ const PORT = 8000;
  *
  */
 typeExpress.get('/', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader({ 'Access-Control-Allow-Origin': '*' });
   res.send('Hello World!');
 });
 typeExpress.get('/users', (req, res) => {

@@ -30,12 +30,13 @@ export class Response {
 
   /**
    * Sets header information for http requests.
-   * ex: res.setHeader('Access-Control-Allow-Origin', '*');
-   * @param key{string}
-   * @param value{string}
+   * ex: res.setHeader({'Access-Control-Allow-Origin': '*'});
+   * @param arg{[key: string]: string}
    */
-  public setHeader(key: string, value: string) {
-    this.httpResponse.setHeader(key, value);
+  public setHeader(arg: { [key: string]: string }) {
+    for (const key in arg) {
+      this.httpResponse.setHeader(key, arg[key]);
+    }
   }
 
   /**
