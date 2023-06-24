@@ -1,5 +1,5 @@
-import { Request } from '../requests';
-import { Response } from '../responses';
+import { Request } from '../request';
+import { Response } from '../response';
 import { MiddlewareHandler } from './types';
 
 export class Middleware {

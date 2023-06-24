@@ -1,12 +1,12 @@
-import { HTTP_REQUEST_METHOD } from './requests/constance';
+import { HTTP_REQUEST_METHOD } from './request/constance';
 import { httpServerFactoryKey, routerKey, container, middlewareKey } from '../di';
 import { HttpServerFactoryInterface, Server, HttpRequest, HttpResponse } from '../interfaces/http';
-import { Router } from './routes';
+import { Router } from './router';
 import { flattenArray } from '../helper/format';
 import { findFirstStrFromArr } from '../helper/find';
-import { Middleware } from './middlewares';
-import { MiddlewareHandler } from './middlewares/types';
-import { RouterHandler } from './routes/types';
+import { Middleware } from './middleware';
+import { MiddlewareHandler } from './middleware/types';
+import { RouterHandler } from './router/types';
 
 /**
  * Providing a method

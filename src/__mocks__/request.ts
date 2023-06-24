@@ -1,6 +1,6 @@
-import { Request } from '../core/requests';
+import { Request } from '../core/request';
 import { HttpRequest } from '../interfaces/http';
-import { ExtractRouteParams } from '../core/routes/types/params';
+import { ExtractRouteParams } from '../core/router/types/params';
 
 export class MockRequest extends Request<string> {
   constructor(private _mockParams: { [key: string]: string }, private _mockBody: unknown) {
