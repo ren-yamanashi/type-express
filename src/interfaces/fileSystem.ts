@@ -17,7 +17,7 @@ type BufferEncoding =
   | 'binary'
   | 'hex';
 
-interface StatsBase<T> {
+type StatsBase<T> = {
   isFile(): boolean;
   isDirectory(): boolean;
   isBlockDevice(): boolean;
@@ -43,7 +43,7 @@ interface StatsBase<T> {
   mtime: Date;
   ctime: Date;
   birthtime: Date;
-}
+};
 
 export interface FileSystemInterface {
   readFile(path: PathLike, options?: BufferEncoding | null): Promise<string | Buffer>;
