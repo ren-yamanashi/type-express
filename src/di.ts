@@ -9,10 +9,13 @@ import { Process } from './infrastructure/process';
 import { RequestFactory } from './core/request';
 import { ResponseFactory } from './core/response';
 import { Middleware } from './core/middleware';
+import { PathInterface } from './interfaces/path';
+import { Path } from './infrastructure/path';
 
 export const container = new Container();
 
 export const httpServerFactoryKey: InjectionKey<HttpServerFactoryInterface> = Symbol();
+export const pathKey: InjectionKey<PathInterface> = Symbol();
 export const fileSystemKey: InjectionKey<FileSystemInterface> = Symbol();
 export const processKey: InjectionKey<ProcessInterface> = Symbol();
 export const routerKey: InjectionKey<Router> = Symbol();
@@ -21,6 +24,7 @@ export const middlewareKey: InjectionKey<Middleware> = Symbol();
 export const registerContainer = (): void => {
   // infrastructure
   container.register(httpServerFactoryKey, new HttpServerFactory());
+  container.register(pathKey, new Path());
   container.register(fileSystemKey, new FileSystem());
   container.register(processKey, new Process());
   // other

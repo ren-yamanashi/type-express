@@ -1,20 +1,25 @@
 import { ProcessInterface } from 'src/interfaces/process';
-import { fileSystemKey, processKey, container } from '../../di';
+import { fileSystemKey, processKey, container, pathKey } from '../../di';
 import { safeExecute } from '../../helper/safeExecute';
 import { FileSystemInterface } from '../../interfaces/fileSystem';
 import { HttpResponse } from '../../interfaces/http';
+import { PathInterface } from 'src/interfaces/path';
+import { MIME_TYPES } from './constance';
+import { MimeTypes } from './types';
 
 export class ResponseFactory {
   public create({
     fileSystem = container.resolve(fileSystemKey),
     process = container.resolve(processKey),
+    path = container.resolve(pathKey),
     httpResponse,
   }: {
     readonly httpResponse: HttpResponse;
     readonly fileSystem?: FileSystemInterface;
+    readonly path?: PathInterface;
     readonly process?: ProcessInterface;
   }): Response {
-    return new Response(fileSystem, process, httpResponse);
+    return new Response(fileSystem, process, path, httpResponse);
   }
 }
 
@@ -25,6 +30,7 @@ export class Response {
   constructor(
     private readonly fileSystem: FileSystemInterface,
     private readonly process: ProcessInterface,
+    private readonly path: PathInterface,
     private readonly httpResponse: HttpResponse,
   ) {}
 
@@ -55,23 +61,37 @@ export class Response {
 
   /**
    * Send a arbitrary file to a client.
-   * This method will automatically set the appropriate Content-Type header based on the extension of the file being sent.
+   * This method will automatically set the appropriate Content-Type header basedz on the extension of the file being sent.
    * If you want to set a different Content-Type for a particular case, you can set the header manually using the `res.setHeader()` methods.
    * @param filePath
    */
   public async sendFile(filePath: string): Promise<void> {
-    const { data, error } = await safeExecute(() =>
-      this.fileSystem.readFile(`${this.process.cwd()}${filePath}`, 'utf8'),
-    );
+    const fullPath = `${this.process.cwd()}${filePath}`;
+    // NOTE: check path is directory
+    this.fileSystem.stat(fullPath, (err, stats) => {
+      if (err) {
+        console.error(err);
+        this.httpResponse.statusCode = 500;
+        this.httpResponse.write('Internal Server Error');
+        this.httpResponse.end();
+      }
+      if (stats.isDirectory()) {
+        this.httpResponse.statusCode = 400;
+        this.httpResponse.write('Error: Path is a directory, not a file');
+        this.httpResponse.end();
+      }
+    });
+
+    const { data, error } = await safeExecute(() => this.fileSystem.readFile(fullPath, 'utf8'));
     if (error) {
       console.error(error);
       this.httpResponse.statusCode = 500;
       this.httpResponse.end(error.message);
     }
     this.httpResponse.statusCode = 200;
-    // TODO: ファイル拡張子によって自動的にheaderの内容を変える https://github.com/ren-yamanashi/type-express/issues/45
-    // TODO: ディレクトリだったらエラーを返す https://github.com/ren-yamanashi/type-express/issues/45
-    this.httpResponse.setHeader('Content-Type', 'text/html');
+    const ext = this.path.extName(fullPath) as MimeTypes;
+    const mimeType = MIME_TYPES[ext];
+    if (mimeType) this.httpResponse.setHeader('Content-Type', mimeType);
     this.httpResponse.write(data ?? '');
     this.httpResponse.end();
   }

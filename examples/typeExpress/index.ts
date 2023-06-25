@@ -25,6 +25,10 @@ typeExpress.get('/users/:id/contents', (req, res) => {
   res.sendFile('/examples/typeExpress/index.html');
 });
 
+typeExpress.get('/users/:id/contents/dirError', (req, res) => {
+  res.sendFile('/examples/typeExpress/');
+});
+
 /**
  *
  * post method
@@ -57,7 +61,6 @@ typeExpress.put('/data/:id/update', (req, res) => {
   }
   res.send('Executed');
 });
-
 
 /**
  *
