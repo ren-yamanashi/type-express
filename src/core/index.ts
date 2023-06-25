@@ -60,6 +60,14 @@ export class TypeExpress {
     });
   }
 
+  public patch<T extends string>(path: T, handler: RouterHandler<T>): void {
+    this.router.setRegistry({
+      path,
+      handler,
+      method: HTTP_REQUEST_METHOD.PATCH,
+    });
+  }
+
   public delete<T extends string>(path: T, handler: RouterHandler<T>): void {
     this.router.setRegistry({
       path,

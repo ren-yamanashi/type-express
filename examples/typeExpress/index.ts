@@ -58,6 +58,22 @@ typeExpress.put('/data/:id/update', (req, res) => {
   res.send('Executed');
 });
 
+
+/**
+ *
+ * patch method
+ *
+ */
+// NOTE: curl -X PATCH -H "Content-Type: application/json" -d '{"name":"hoge"}' http://localhost:8000/data/2/update
+typeExpress.patch('/data/:id/update', (req, res) => {
+  if (req.body?.name) {
+    const user = { id: Number(req.params.id), name: req.body.name as string };
+    const newUsers = updateUser(user);
+    console.log(newUsers);
+  }
+  res.send('Executed');
+});
+
 /**
  *
  * delete method
